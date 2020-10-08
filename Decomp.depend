@@ -1,0 +1,57 @@
+# depslib dependency file v1.0
+1602171700 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
+	"Parse/LoadFile.c"
+	<iostream>
+	<map>
+	<string>
+	<string.h>
+	<stdio.h>
+	<memory.h>
+
+1601985856 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_header.c
+
+1601985121 c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_header.c
+
+1602171451 c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_format.c
+	<stdbool.h>
+	<stdint.h>
+
+1602171451 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_format.c
+	<stdbool.h>
+	<stdint.h>
+
+1602164407 c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_format_funcs.c
+	"DOS_Format.c"
+	<math.h>
+
+1602171001 c:\users\stein\desktop\proj 2020\2020\decomp\printfuncs.c
+	"Parse/LoadFile.c"
+	<math.h>
+	<stdio.h>
+	<stdint.h>
+
+1602171701 source:c:\users\stein\desktop\proj 2020\2020\decomp\printfuncs.c
+	<math.h>
+	<stdio.h>
+	<stdint.h>
+
+1602171671 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\loadfile.c
+	"DOS_Format.c"
+	<string.h>
+	<stdio.h>
+	<memory.h>
+	<stdbool.h>
+	<stdint.h>
+	<stdlib.h>
+	<math.h>
+
+1602172527 c:\users\stein\desktop\proj 2020\2020\decomp\parse\loadfile.c
+	"DOS_Format.c"
+	<string.h>
+	<stdio.h>
+	<memory.h>
+	<stdbool.h>
+	<stdint.h>
+	<stdlib.h>
+	<math.h>
+
