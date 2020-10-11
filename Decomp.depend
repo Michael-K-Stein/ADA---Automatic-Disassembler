@@ -1,22 +1,17 @@
 # depslib dependency file v1.0
-1602171700 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
-	"Parse/LoadFile.c"
-	<iostream>
+1602421450 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
 	<map>
-	<string>
-	<string.h>
-	<stdio.h>
-	<memory.h>
+	"source.h"
 
 1601985856 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_header.c
 
 1601985121 c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_header.c
 
-1602171451 c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_format.c
+1602177490 c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_format.c
 	<stdbool.h>
 	<stdint.h>
 
-1602171451 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_format.c
+1602177490 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_format.c
 	<stdbool.h>
 	<stdint.h>
 
@@ -45,7 +40,7 @@
 	<stdlib.h>
 	<math.h>
 
-1602172527 c:\users\stein\desktop\proj 2020\2020\decomp\parse\loadfile.c
+1602177697 c:\users\stein\desktop\proj 2020\2020\decomp\parse\loadfile.c
 	"DOS_Format.c"
 	<string.h>
 	<stdio.h>
@@ -54,4 +49,56 @@
 	<stdint.h>
 	<stdlib.h>
 	<math.h>
+
+1602183605 source:c:\users\stein\desktop\proj 2020\2020\decomp\source.c
+	"Parse/LoadFile.c"
+	<string.h>
+	<stdio.h>
+	<memory.h>
+
+1602421337 c:\users\stein\desktop\proj 2020\2020\decomp\source.c
+	"Parse/LoadFile.c"
+	"Decompilation/GetStrings.h"
+	<string.h>
+	<stdio.h>
+	<memory.h>
+
+1602180217 source:c:\users\stein\desktop\proj 2020\2020\decomp\decompilation\getstrings.c
+	"GetStrings.h"
+
+1602180153 c:\users\stein\desktop\proj 2020\2020\decomp\decompilation\getstrings.c
+
+1602422511 c:\users\stein\desktop\proj 2020\2020\decomp\decompilation\getstrings.h
+	"../Parse/DOS_Format.h"
+	"../PrintFuncs.h"
+
+1602180221 source:c:\users\stein\desktop\proj 2020\2020\decomp\decompilation\getstrings.h
+	"../Parse/DOS_Format.c"
+
+1602422475 c:\users\stein\desktop\proj 2020\2020\decomp\source.h
+	"Parse/LoadFile.h"
+	"Decompilation/GetStrings.h"
+	"PrintFuncs.h"
+	<string.h>
+	<stdio.h>
+	<memory.h>
+
+1602421604 c:\users\stein\desktop\proj 2020\2020\decomp\parse\loadfile.h
+	"DOS_Format.h"
+	<string.h>
+	<stdio.h>
+	<memory.h>
+	<stdbool.h>
+	<stdint.h>
+	<stdlib.h>
+	<math.h>
+
+1602177490 c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_format.h
+	<stdbool.h>
+	<stdint.h>
+
+1602421592 c:\users\stein\desktop\proj 2020\2020\decomp\printfuncs.h
+	<math.h>
+	<stdio.h>
+	<stdint.h>
 

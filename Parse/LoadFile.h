@@ -6,7 +6,7 @@
 #ifndef __ParseLoadFile
 #define __ParseLoadFile
 
-#include "DOS_Format.c"
+#include "DOS_Format.h"
 #include <string.h>
 #include <stdio.h>
 #include <memory.h>
@@ -133,10 +133,18 @@ Portable_Executable LoadFile(char * fPath) {
     return PE;
 }
 
+
 bool VerifyPEFormat(Portable_Executable * PE) {
+    unsigned char propperPESignature[2] = { 'M', 'Z' };
     unsigned char propperPE[4] = {0x50, 0x45, 0, 0};
     bool flagValid = true;
     for (int i = 0; i < 4; i++) { flagValid = flagValid && propperPE[i] == PE->portable_executable_header.coff_header.Signature[i]; }
+
+    for (int i = 0; i < 2; i++) { flagValid = flagValid && propperPESignature[i] == PE->portable_executable_header.dos_header.DOS_Signature[i]; }
+
+    for (int i = 0; i < 4; i++) { flagValid = flagValid && PE->portable_executable_header.data_directories.Zero_Check_Valid_1[i] == 0; }
+    for (int i = 0; i < 8; i++) { flagValid = flagValid && PE->portable_executable_header.data_directories.Zero_Check_Valid_2[i] == 0; }
+
     return flagValid;
 }
 
