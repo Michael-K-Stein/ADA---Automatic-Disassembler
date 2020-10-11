@@ -14,7 +14,7 @@ Reference:
 
 */
 #include <map>
-#include "source.h"
+#include "src/source.h"
 
 using namespace std;
 
@@ -31,4 +31,6 @@ std::map<char, string> _OP_CODES = {
 int main()
 {
     return StartUp();
+
+    return 0;
 }

@@ -1,7 +1,7 @@
 # depslib dependency file v1.0
-1602421450 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
+1602427029 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
 	<map>
-	"source.h"
+	"src/source.h"
 
 1601985856 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_header.c
 
@@ -75,7 +75,7 @@
 1602180221 source:c:\users\stein\desktop\proj 2020\2020\decomp\decompilation\getstrings.h
 	"../Parse/DOS_Format.c"
 
-1602422475 c:\users\stein\desktop\proj 2020\2020\decomp\source.h
+1602426401 c:\users\stein\desktop\proj 2020\2020\decomp\source.h
 	"Parse/LoadFile.h"
 	"Decompilation/GetStrings.h"
 	"PrintFuncs.h"
@@ -101,4 +101,38 @@
 	<math.h>
 	<stdio.h>
 	<stdint.h>
+
+1602428098 c:\users\stein\desktop\proj 2020\2020\decomp\src\source.h
+	"Parse/LoadFile.h"
+	"AnalyzingFuncs.h"
+	"PrintFuncs.h"
+	<string.h>
+	<stdio.h>
+	<memory.h>
+
+1602421604 c:\users\stein\desktop\proj 2020\2020\decomp\src\parse\loadfile.h
+	"DOS_Format.h"
+	<string.h>
+	<stdio.h>
+	<memory.h>
+	<stdbool.h>
+	<stdint.h>
+	<stdlib.h>
+	<math.h>
+
+1602177490 c:\users\stein\desktop\proj 2020\2020\decomp\src\parse\dos_format.h
+	<stdbool.h>
+	<stdint.h>
+
+1602443920 c:\users\stein\desktop\proj 2020\2020\decomp\src\printfuncs.h
+	<math.h>
+	<stdio.h>
+	<stdint.h>
+
+1602431902 c:\users\stein\desktop\proj 2020\2020\decomp\src\analyzingfuncs.h
+	"Analysis/GetStrings.h"
+
+1602443458 c:\users\stein\desktop\proj 2020\2020\decomp\src\analysis\getstrings.h
+	"../Parse/DOS_Format.h"
+	"../PrintFuncs.h"
 

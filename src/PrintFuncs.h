@@ -41,15 +41,15 @@ int hexprintf_Rev(unsigned char * c, int length) {
 int asciiprintf(unsigned char * c, int length) {
     for (int i = 0; i < length; i++) {
         if (c[i] < 127 && c[i] > 31) {
-        printf("%c", c[i]); printf(" "); }
-        else { printf(". "); }
+        printf("%c", c[i]); printf(""); }
+        else { printf("."); }
     }
 }
 int asciiprintf_Signed(char * c, int length) {
     for (int i = 0; i < length; i++) {
         if (c[i] < 127 && c[i] > 31) {
-        printf("%c", c[i]); printf(" "); }
-        else { printf(". "); }
+        printf("%c", c[i]); printf(""); }
+        else { printf("."); }
     }
 }
 
