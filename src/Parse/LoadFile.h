@@ -89,7 +89,7 @@ int LoadFile_PE(FILE * pFile, Portable_Executable * PE) {
         uint32_t SizeOfRawData = b16to10_4Bytes((unsigned char *)PE->section_tables[secInd].Size_Of_Raw_Data);
         uint32_t AddressToRawData = b16to10_4Bytes(ptrData);
 
-        if (b16to10_4Bytes(ptrData) == 0) {
+         if (b16to10_4Bytes(ptrData) == 0) {
             /// This section is empty.
             /// No need to load it.
             /// Probably a good idea to inform the user of this. Though it's not uncommon.

@@ -118,8 +118,9 @@ char * GetHashes(Portable_Executable * PE) {
                         /**     md5 = 32bytes
 
                         */
-                    if (IsBase64(tmpString, sInd)) {
-                        if (sInd == 32) {
+
+                    if (sInd == 32) {
+                        if (IsBase64(tmpString, sInd)) {
                             tmpString[sInd] = '\n';
                             for (int ind = 0; ind <= sInd; ind++) {
                                 allStrings[stringsInd] = tmpString[ind];
@@ -129,9 +130,9 @@ char * GetHashes(Portable_Executable * PE) {
                     }
                     sInd = 0;
                 } else {sInd++; }
-                sInd = 0;
             }
 
+            sInd=0;
             // Check for unicode "ascii"
             for (int i = 0; i < b16to10_4Bytes(PE->section_tables[rdataIndex].Size_Of_Raw_Data); i++) {
                 tmpString[sInd] = data[i];
@@ -140,8 +141,9 @@ char * GetHashes(Portable_Executable * PE) {
                     /**     md5 = 32bytes
 
                     */
-                    if (IsBase64(tmpString,sInd)) {
-                        if (sInd == 32) {
+
+                    if (sInd == 32) {
+                        if (IsBase64(tmpString,sInd)) {
                             tmpString[sInd] = '\n';
                             for (int ind = 0; ind <= sInd; ind++) {
                                 allStrings[stringsInd] = tmpString[ind];

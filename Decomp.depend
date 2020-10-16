@@ -1,7 +1,9 @@
 # depslib dependency file v1.0
-1602427029 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
+1602777758 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
 	<map>
 	"src/source.h"
+	"src/Decompilation/_00.h"
+	"stdio.h"
 
 1601985856 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_header.c
 
@@ -110,7 +112,7 @@
 	<stdio.h>
 	<memory.h>
 
-1602421604 c:\users\stein\desktop\proj 2020\2020\decomp\src\parse\loadfile.h
+1602505135 c:\users\stein\desktop\proj 2020\2020\decomp\src\parse\loadfile.h
 	"DOS_Format.h"
 	<string.h>
 	<stdio.h>
@@ -132,7 +134,12 @@
 1602431902 c:\users\stein\desktop\proj 2020\2020\decomp\src\analyzingfuncs.h
 	"Analysis/GetStrings.h"
 
-1602443458 c:\users\stein\desktop\proj 2020\2020\decomp\src\analysis\getstrings.h
+1602761344 c:\users\stein\desktop\proj 2020\2020\decomp\src\analysis\getstrings.h
 	"../Parse/DOS_Format.h"
 	"../PrintFuncs.h"
+
+1602778035 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\_00.h
+	"Common.h"
+
+1602775775 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\common.h
 

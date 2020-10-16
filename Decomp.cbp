@@ -51,6 +51,16 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="source.c">
 			<Option compilerVar="CC" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/AnalyzingFuncs.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="src/Decompilation/Common.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="src/Decompilation/_00.h">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Extensions>
 			<code_completion />

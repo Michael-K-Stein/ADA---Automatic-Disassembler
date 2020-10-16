@@ -2,42 +2,52 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
+	<File name="Decompilation\GetStrings.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1210" topLine="24" />
+		</Cursor>
+	</File>
 	<File name="Parse\DOS_Header.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="519" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="516" topLine="0" />
+			<Cursor1 position="752" topLine="5" />
 		</Cursor>
 	</File>
-	<File name="Parse\DOS_Format.c" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Parse\DOS_Format.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="532" topLine="0" />
+			<Cursor1 position="892" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="src\AnalyzingFuncs.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="520" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="source.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4758" topLine="124" />
+		</Cursor>
+	</File>
+	<File name="src\Decompilation\Common.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2778" topLine="40" />
+		</Cursor>
+	</File>
+	<File name="src\Decompilation\_00.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7766" topLine="173" />
 		</Cursor>
 		<Folding>
-			<Collapse line="28" />
-			<Collapse line="40" />
-			<Collapse line="118" />
+			<Collapse line="119" />
 		</Folding>
 	</File>
-	<File name="source.c" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Decompilation\GetStrings.c" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="6177" topLine="127" />
-		</Cursor>
-		<Folding>
-			<Collapse line="112" />
-		</Folding>
-	</File>
-	<File name="Decompilation\GetStrings.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="826" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="Decompilation\GetStrings.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="102" topLine="0" />
+			<Cursor1 position="28" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

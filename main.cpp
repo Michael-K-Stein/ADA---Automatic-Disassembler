@@ -15,6 +15,8 @@ Reference:
 */
 #include <map>
 #include "src/source.h"
+#include "src/Decompilation/_00.h"
+#include "stdio.h"
 
 using namespace std;
 
@@ -30,7 +32,14 @@ std::map<char, string> _OP_CODES = {
 //extern "C" void f(); // one way
 int main()
 {
-    return StartUp();
+    unsigned char demoOpCode[8] = { 0x04, 0x50, 0x50, 0x50, 0x50, 0x00, 0x00 };
+
+
+    char * dec = (char *)calloc(32, sizeof(char));
+    Decomp_0x0X(demoOpCode, dec);
+    printf(dec); printf("\n\n\n");
+
+    //return StartUp();
 
     return 0;
 }
