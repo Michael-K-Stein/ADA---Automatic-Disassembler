@@ -1,8 +1,10 @@
 # depslib dependency file v1.0
-1602777758 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
+1603369830 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
 	<map>
+	<iostream>
+	<string>
 	"src/source.h"
-	"src/Decompilation/_00.h"
+	"src/Decompilation/DisassembleMaster.h"
 	"stdio.h"
 
 1601985856 source:c:\users\stein\desktop\proj 2020\2020\decomp\parse\dos_header.c
@@ -138,8 +140,12 @@
 	"../Parse/DOS_Format.h"
 	"../PrintFuncs.h"
 
-1602778035 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\_00.h
+1603364009 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\_00.h
 	"Common.h"
 
-1602775775 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\common.h
+1603362589 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\common.h
+
+1603364732 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\disassemblemaster.h
+	"Common.h"
+	"_00.h"
 

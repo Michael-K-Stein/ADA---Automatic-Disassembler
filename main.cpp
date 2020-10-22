@@ -14,8 +14,10 @@ Reference:
 
 */
 #include <map>
+#include <iostream>
+#include <string>
 #include "src/source.h"
-#include "src/Decompilation/_00.h"
+#include "src/Decompilation/DisassembleMaster.h"
 #include "stdio.h"
 
 using namespace std;
@@ -27,18 +29,39 @@ std::map<char, string> _OP_CODES = {
 };
 
 
+unsigned char * getASMInput() {
+    unsigned char * inp = (unsigned char *)malloc(17 * sizeof(unsigned char));
+    int * inp2 = (int *)malloc(17 * sizeof(int));
+    bool finished = false;
+    cout << endl << "Input: ";
+    for (int i = 0; i < 16; i++) {
+        if (!finished) {
+            cin >> std::hex >> inp2[i];
+            finished = inp2[i] >= 256;
+            inp[i] = (inp2[i]% 256);
+        } else { inp[i] = 0; }
+    }
+    inp[16] = '\0';
+
+    cout << endl<<endl;
+    return inp;
+}
 
 
-//extern "C" void f(); // one way
+
+
+
+
+
+//extern "C" void foo(); // one way
 int main()
 {
-    unsigned char demoOpCode[8] = { 0x04, 0x50, 0x50, 0x50, 0x50, 0x00, 0x00 };
-
-
-    char * dec = (char *)calloc(32, sizeof(char));
-    Decomp_0x0X(demoOpCode, dec);
-    printf(dec); printf("\n\n\n");
-
+    while (1) {
+        char * dec = (char *)calloc(64, sizeof(char));
+        Disassemble(getASMInput(),dec);
+        //Decomp_0x0X(getASMInput(), dec);
+        printf(dec); printf("\n\n\n");
+    }
     //return StartUp();
 
     return 0;
