@@ -91,9 +91,11 @@ int Decomp_0x0X(unsigned char * opCodes, char * output, bool Operand_Size_Overri
     unsigned char h = opCodes[0] >> 4;
     unsigned char l = opCodes[0] % 0x10;
 
+    char * opCMD = (char *)calloc(8, sizeof(char));
+
     int CMDoffset = 0;
-    if (l >=0 && l <= 5) { memcpy(output, "ADD ", 4); CMDoffset += 4; }
-    else if (l >= 8 && l <= 0x0D) { memcpy(output, "OR ", 3); CMDoffset+=3; }
+    if (l >=0 && l <= 5) { memcpy(output, "ADD ", 4); CMDoffset += 4; sprintf(opCMD, "%s", &"ADD");  }
+    else if (l >= 8 && l <= 0x0D) { memcpy(output, "OR ", 3); CMDoffset+=3; sprintf(opCMD, "%s", &"OR");}
 
     bool d = (opCodes[0] % 4) >> 1; // Add R/M to REG
     bool s = (opCodes[0] % 2); // 32bit values
@@ -102,11 +104,11 @@ int Decomp_0x0X(unsigned char * opCodes, char * output, bool Operand_Size_Overri
 
     char mod = getMod(opCodes);
 
-    char * reg = (char *)malloc(32);  int reg_len = getRegisterName( ( opCodes[1] % 64 ) >> 3, s, Operand_Size_Override, mod, reg  );
-    char * rm = (char *)malloc(64);   int rm_len = getRMName( opCodes[1] % 8, s, Address_Size_Override, mod, rm  );
+    char * reg = (char *)malloc(32);  int reg_len = getRegisterName( ( opCodes[1] % 64 ) >> 3, s, Operand_Size_Override, reg  );
+    char * rm = (char *)malloc(64); int rm_len = generateRM(opCodes, rm, Address_Size_Override, Operand_Size_Override); //getRMName( opCodes[1] % 8, s, Address_Size_Override, mod, rm  );
     char * disp;
     if ((l >= 0 && l <= 3) || (l >= 8 && l <= 0x0D)) {
-        switch (mod) {
+        /*switch (mod) {
         case FIELD_IS_REGISTER: // MOD == 11
             OpCodesUsed = 2;
             break;
@@ -123,7 +125,7 @@ int Decomp_0x0X(unsigned char * opCodes, char * output, bool Operand_Size_Overri
                 memcpy(rm + 7, "]", 1);
                 OpCodesUsed = 6;
             } else if (opCodes[1] % 8 == 0b100) { // Multiple of register ptr - if R/M == 100 && MOD == 00
-                rm_len = getSIB(opCodes + 2, s, Address_Size_Override, mod, false, rm);
+                rm_len = getSIB(opCodes + 2, Address_Size_Override, mod, false, rm);
                 OpCodesUsed = 3;
 
             } else {
@@ -138,7 +140,7 @@ int Decomp_0x0X(unsigned char * opCodes, char * output, bool Operand_Size_Overri
             break;
         case ONE_BYTE_DISPLACEMENT: // MOD == 01
             if (opCodes[1] % 8 == 0b100) { // Multiple of register ptr - if R/M == 100 && MOD == 01
-                rm_len = getSIB(opCodes + 2, s, Address_Size_Override, mod, true, rm);
+                rm_len = getSIB(opCodes + 2, Address_Size_Override, mod, true, rm);
                 OpCodesUsed = 3;
             } else {
                 disp = (char *)malloc((9 + rm_len) * sizeof(char));
@@ -154,7 +156,7 @@ int Decomp_0x0X(unsigned char * opCodes, char * output, bool Operand_Size_Overri
 
         case FOUR_BYTE_DISPLACEMENT: // MOD == 10
             if (opCodes[1] % 8 == 0b100) { // Multiple of register ptr - if R/M == 100 && MOD == 10
-                rm_len = getSIB(opCodes + 2, s, Address_Size_Override, getMod(opCodes), true, rm);
+                rm_len = getSIB(opCodes + 2, Address_Size_Override, getMod(opCodes), true, rm);
                 OpCodesUsed = 7;
             } else {
                 disp = (char *)malloc((7 + 8 + rm_len) * sizeof(char));
@@ -168,20 +170,20 @@ int Decomp_0x0X(unsigned char * opCodes, char * output, bool Operand_Size_Overri
                 OpCodesUsed = 6; // Add OP code + MOD-REG-R\M + Disp32 ( 32bits = 4 bytes)
             }
             break;
-        }
+        }*/
     } else if (l >= 4 && l <= 5) {
         d = 1;
         if (l == 4) { // ADD AL, DISP
             memcpy(reg, "AL", sizeof("AL"));
-            disp = (char *)malloc(sizeof(char));
-            int disp_len = getDisplacement(opCodes + 1, s, Address_Size_Override, disp); // should return 1
-            sprintf(rm, "0x%s", disp);
+            disp = (char *)malloc(16 * sizeof(char));
+            int disp_len = getDisplacement(opCodes + 1, s, Operand_Size_Override, disp); // should return 1
+            sprintf(rm, "%s", disp);
             rm_len = 2 + disp_len;
         } else if (l == 5) { // ADD EAX, DISP
-            memcpy(reg, "EAX", sizeof("EAX"));
-            disp = (char *)malloc(4 * sizeof(char));
-            int disp_len = getDisplacement(opCodes + 1, s, Address_Size_Override, disp); // should return 4
-            sprintf(rm, "0x%s", disp);
+            Operand_Size_Override ? memcpy(reg, "AX", sizeof("AX")) : memcpy(reg, "EAX", sizeof("EAX"));
+            disp = (char *)malloc(16 * sizeof(char));
+            int disp_len = getDisplacement(opCodes + 1, mod, Operand_Size_Override, disp); // should return 4
+            sprintf(rm, "%s", disp);
             rm_len = 2 + disp_len;
         }
     }/* else if (l >= 8 && l <= 0x0D) { // OR
@@ -190,15 +192,19 @@ int Decomp_0x0X(unsigned char * opCodes, char * output, bool Operand_Size_Overri
     printf("REG: %s, REG_LEN: %d\n", reg, reg_len);
     printf("R/M: %s, RM_LEN: %d\n", rm, rm_len);
 
-    if (d) {
+    sprintf(output, "%s %s, %s", opCMD, d ? reg : rm, d ? rm : reg);
+
+    /*if (d) {
         memcpy(output + CMDoffset, reg, reg_len);
         memcpy(output + CMDoffset + reg_len, ", ", 2);
         memcpy(output + CMDoffset + 2 + reg_len, rm, rm_len);
+        sprintf(output, "%s %s, %s", opCMD, reg, rm);
     } else {
         memcpy(output + CMDoffset, rm, rm_len);
         memcpy(output + CMDoffset + rm_len, ", ", 2);
         memcpy(output + CMDoffset + 2 + rm_len, reg, reg_len);
-    }
+        sprintf(output, "%s %s, %s", opCMD, rm, reg);
+    }*/
 
     printf("out: %s\n", output);
 

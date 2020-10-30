@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1603369830 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
+1603986340 source:c:\users\stein\desktop\proj 2020\2020\decomp\main.cpp
 	<map>
 	<iostream>
 	<string>
@@ -106,7 +106,7 @@
 	<stdio.h>
 	<stdint.h>
 
-1602428098 c:\users\stein\desktop\proj 2020\2020\decomp\src\source.h
+1602424498 c:\users\stein\desktop\proj 2020\2020\decomp\src\source.h
 	"Parse/LoadFile.h"
 	"AnalyzingFuncs.h"
 	"PrintFuncs.h"
@@ -114,7 +114,7 @@
 	<stdio.h>
 	<memory.h>
 
-1602505135 c:\users\stein\desktop\proj 2020\2020\decomp\src\parse\loadfile.h
+1602501535 c:\users\stein\desktop\proj 2020\2020\decomp\src\parse\loadfile.h
 	"DOS_Format.h"
 	<string.h>
 	<stdio.h>
@@ -124,28 +124,32 @@
 	<stdlib.h>
 	<math.h>
 
-1602177490 c:\users\stein\desktop\proj 2020\2020\decomp\src\parse\dos_format.h
+1602173890 c:\users\stein\desktop\proj 2020\2020\decomp\src\parse\dos_format.h
 	<stdbool.h>
 	<stdint.h>
 
-1602443920 c:\users\stein\desktop\proj 2020\2020\decomp\src\printfuncs.h
+1602440320 c:\users\stein\desktop\proj 2020\2020\decomp\src\printfuncs.h
 	<math.h>
 	<stdio.h>
 	<stdint.h>
 
-1602431902 c:\users\stein\desktop\proj 2020\2020\decomp\src\analyzingfuncs.h
+1602428302 c:\users\stein\desktop\proj 2020\2020\decomp\src\analyzingfuncs.h
 	"Analysis/GetStrings.h"
 
-1602761344 c:\users\stein\desktop\proj 2020\2020\decomp\src\analysis\getstrings.h
+1602757744 c:\users\stein\desktop\proj 2020\2020\decomp\src\analysis\getstrings.h
 	"../Parse/DOS_Format.h"
 	"../PrintFuncs.h"
 
-1603364009 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\_00.h
+1603489428 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\_00.h
 	"Common.h"
 
-1603362589 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\common.h
+1603991424 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\common.h
 
-1603364732 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\disassemblemaster.h
+1604049580 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\disassemblemaster.h
 	"Common.h"
 	"_00.h"
+	"ControlFlow_Conditional/JMP_Call.h"
+
+1603812897 c:\users\stein\desktop\proj 2020\2020\decomp\src\decompilation\controlflow_conditional\jmp_call.h
+	"../Common.h"
 
