@@ -1,7 +1,6 @@
 #ifndef __PrintFuncs
 #define __PrintFuncs
 
-//#include "Parse/LoadFile.c"
 #include <math.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -64,7 +63,6 @@ void PrintSectionHeaderInfo(Section_Table * pSectionHeader) {
     printf("Virual Address: %d\n", b16to10_4Bytes(pSectionHeader->Virtual_Address));
 
     printf("Size of Raw Data: %d\n", b16to10_4Bytes(pSectionHeader->Size_Of_Raw_Data));
-    //hexprintf(pSectionHeader->Size_Of_Raw_Data, 4); std::cout << std::endl;
 
     printf("Pointer to Raw Data: ");
     hexprintf(pSectionHeader->Pointer_To_Raw_Data, 4); printf("\n");

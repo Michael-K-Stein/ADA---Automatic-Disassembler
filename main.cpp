@@ -17,7 +17,7 @@ Reference:
 #include <iostream>
 #include <string>
 #include "src/source.h"
-#include "src/Decompilation/DisassembleMaster.h"
+#include "src/Disassembly/DisassembleMaster.h"
 #include "stdio.h"
 
 using namespace std;

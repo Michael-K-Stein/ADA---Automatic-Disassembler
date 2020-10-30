@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Decomp" />
+		<Option title="ADA" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -57,6 +57,9 @@
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="src/Decompilation/Common.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="src/Decompilation/ControlFlow_Conditional/JMP_Call.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="src/Decompilation/_00.h">
