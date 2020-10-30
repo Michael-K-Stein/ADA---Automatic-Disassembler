@@ -22,7 +22,7 @@ enum MOD {
 char getMod(unsigned char * opCodes) { /*printf("MOD: %d\n", opCodes[1] >> 6);*/ return opCodes[1] >> 6; }
 
 /// Prefixes
-unsigned char PREFIXES_LIST[11] = { 0xF0, 0x66, 0x67, 0xF3, 0xF2, 0x2E, 0x36, 0x3E, 0x26, 0x64, 0x65 };
+unsigned char PREFIXES_LIST[11] = { 0xF0, 0x66, 0x67, 0xF3, 0xF2, 0x26, 0x2E, 0x36, 0x3E, 0x64, 0x65 };
 enum PREFIXES {
     LOCK = 0xF0,
 
@@ -34,16 +34,21 @@ enum PREFIXES {
     REPNE = 0xF2,
 
     // Segment Override
+    ES = 0x26,
     CS = 0x2E,
     SS = 0x36,
     DS = 0x3E,
-    ES = 0x26,
     FS = 0x64,
     GS = 0x65
 };
 
+/// Segment Values
+char * SEG_VALUE = {"ESCSSSDSFSGS"};
+char * getSegmentName(char segValue) {
+    return SEG_VALUE + (segValue * 2);
+}
 
-/// Register values
+/// Register Values
 // http://www.cs.loyola.edu/~binkley/371/Encoding_Real_x86_Instructions.html
 char * REG_VALUE_8b = {"ALCLDLBLAHCHDHBH"};
 char * REG_VALUE_16b = {"AXCXDXBXSPBPSIDI"};
@@ -233,18 +238,18 @@ int getSIB(unsigned char * SIBByte, bool SizeOverride, unsigned char mod, bool w
         if (index == 0b100) { /// disregard index
             char * baseChar = (char *)malloc(4 * sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
             char * disp = (char *)malloc(32 * sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
-            if (withDisp) {sprintf(destination, "[%s + %s]", baseChar, disp);
-            } else { sprintf(destination, "[%s]", baseChar); }
+            /*if (withDisp) {*/sprintf(destination, "[%s]", disp);
+            //} else { sprintf(destination, "[%s]", baseChar); }
 
-            return 1 + (withDisp ? disp_len_off : 0);
+            return 1 + disp_len_off;
         } else {
             char * indexChar = (char *)malloc(4 * sizeof(char)); int index_len = getRMName(index, true, SizeOverride, mod, indexChar);
             char * baseChar = (char *)malloc(4 * sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
             char * disp = (char *)malloc(32 * sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
 
-            sprintf(destination, "[%s + %s*%d + %s]", baseChar, indexChar, (int)pow(2.0, (double)scale), disp);
+            sprintf(destination, "[%s*%d + %s]", indexChar, (int)pow(2.0, (double)scale), disp);
 
-            return 1 + (withDisp ? disp_len_off : 0);
+            return 1 + disp_len_off;
         }
     } else {
         if (index == 0b100) { /// disregard index
@@ -381,7 +386,7 @@ int generateRM_FOUR_BYTE_DISPLACEMENT(unsigned char * opCodes, char * output, ch
         } else {
             sprintf(output, "[XXX + %s]", disp);
             memcpy(output+1, getRegisterName_32b(rmVal), 3);
-            return 4;
+            return 5;
         }
     }
 
@@ -402,7 +407,7 @@ int generateRM(unsigned char * opCodes, char * output, bool address_override, bo
             return generateRM_FOUR_BYTE_DISPLACEMENT(opCodes, output, rmVal, address_override);
             break; }
         case FIELD_IS_REGISTER: {
-            getRegisterName(opCodes[1] % 8, opCodes[0] % 2, size_override, output);
+            getRMName(opCodes[1] % 8, opCodes[0] % 2, size_override, mod, output);
             return 1;
             break;}
     }
@@ -429,6 +434,43 @@ int generateIMM(unsigned char * opCodes, char * output, bool address_override, b
         break; }
     }
     return 0;
+}
+
+int generateMOV(unsigned char * opCodes, char * output, bool address_override, bool size_override, char * rm, int rm_len_off) { // opCodes should be given starting right after the prefixes. Including the action op code.
+    /** This is very well covered in IsRegular */ // if (IsBetween(opCode[0], 0x88, 0x8B)) { memcpy(opCMDOutput, &"MOV", 3); return 1; } /// MOV REG
+    if (opCodes[0] == 0x8C || opCodes[0] == 0x8E) {
+        bool d = ((opCodes[0] >> 1) % 2); /// d == 1 --> Sreg,r/m16     ;   d == 0 --> r/m16,Sreg
+
+        char * seg = (char *)calloc(3, sizeof(char)); memcpy(seg, getSegmentName( (opCodes[1] >> 3) % 8 ), 2);
+
+        char mod = getMod(opCodes);
+        if (mod == FIELD_IS_REGISTER) { /// RM is wrong here since a seg can only work with 16bit
+            rm = (char *)calloc(4,sizeof(char));
+            getRegisterName(opCodes[1] % 8,true,size_override,rm);
+            rm_len_off = 1;
+        }
+
+        sprintf(output, "%s, %s", d ? seg : rm, d ? rm : seg);
+        return rm_len_off;
+    } else if (opCodes[0] < 0xB8) { /// MOV r8,imm8
+        char regVal = opCodes[0] % 8;
+        char * imm = (char *)calloc(16, sizeof(char));
+        char * reg = (char *)calloc(3, sizeof(char)); memcpy(reg, getRegisterName_8b(regVal), 2);
+        int imm_len_off = generateIMM(opCodes + 1, imm, address_override, size_override, 0b00);
+        sprintf(output, "%s, %s", reg, imm);
+        return imm_len_off;
+    } else if (opCodes[0] > 0xB7 && opCodes[0] < 0xC0) {/// MOV r16/32,imm16/32
+        char regVal = opCodes[0] % 8;
+        char * imm = (char *)calloc(16, sizeof(char));
+        char * reg = (char *)calloc(3, sizeof(char)); memcpy(reg, size_override ? getRegisterName_16b(regVal) : getRegisterName_32b(regVal), 3 - size_override);
+        int imm_len_off = generateIMM(opCodes + 1, imm, address_override, size_override, 0b01);
+        sprintf(output, "%s, %s", reg, imm);
+        return imm_len_off;
+    } else if (opCodes[0] == 0xC6 || opCodes[0] == 0xC7) { /// MOV IMM
+        char * imm = (char *)calloc(16, sizeof(char)); int imm_len_off = generateIMM(opCodes + 1 + rm_len_off, imm, address_override, size_override, opCodes[0] % 2);
+        sprintf(output, "%s, %s", rm, imm);
+        return rm_len_off + imm_len_off;
+    }
 }
 
 char * SingleOpCMD(unsigned char * opCodes, bool size_override) {

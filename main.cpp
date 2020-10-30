@@ -23,13 +23,6 @@ Reference:
 using namespace std;
 
 
-std::map<char, string> _OP_CODES = {
-    { 0x90, "NOP" },
-    { 0xAB, "STOSW" },
-    { 0xF0, "Jcc" }
-};
-
-
 int getASMInput(unsigned char * dest) {
     unsigned char * inp = (unsigned char *)malloc(17 * sizeof(unsigned char));
     int * inp2 = (int *)malloc(17 * sizeof(int));
