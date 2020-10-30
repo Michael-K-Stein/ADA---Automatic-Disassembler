@@ -189,9 +189,9 @@ int IsSegment(unsigned char * opCode, char * opCMDOutput) {
     sprintf(type, "%s", (opCode[0] % 2) ? &"POP\0" : &"PUSH" );
 
     if (opCode[0] >> 1 == 0b0000011) { memcpy(seg, &"ES", 2); ret = 1; }
-    if (opCode[0] >> 1 == 0b0001011) { memcpy(seg, &"SS", 2); ret = 1; }
-    if (opCode[0] >> 1 == 0b0000111) { memcpy(seg, &"CS", 2); ret = 1; }
-    if (opCode[0] >> 1 == 0b0001111) { memcpy(seg, &"DS", 2); ret = 1; }
+    else if (opCode[0] >> 1 == 0b0001011) { memcpy(seg, &"SS", 2); ret = 1; }
+    else if (opCode[0] >> 1 == 0b0000111) { memcpy(seg, &"CS", 2); ret = 1; }
+    else if (opCode[0] >> 1 == 0b0001111) { memcpy(seg, &"DS", 2); ret = 1; }
 
     sprintf(opCMDOutput, "%s %s", type, seg);
 
@@ -202,13 +202,13 @@ int IsSpecial(unsigned char * opCode, char * opCMDOutput, bool size_override) {
     int ret = 0;
     char * operationType = (char *)calloc(4, sizeof(char));
     if (IsBetween(opCode[0], 0x90, 0x97)) {memcpy(opCMDOutput, &"XCHG", 4); return 1; }
-    if (IsBetween(opCode[0], 0x04, 0x05)) { memcpy(operationType, &"ADD", 3); ret = 1; }
-    if (IsBetween(opCode[0], 0x0C, 0x0D)) { memcpy(operationType, &"OR\0", 3); ret = 1; }
-    if (IsBetween(opCode[0], 0x14, 0x15)) { memcpy(operationType, &"ADC", 3); ret = 1; }
-    if (IsBetween(opCode[0], 0x1C, 0x1D)) { memcpy(operationType, &"SBB", 3); ret = 1; }
-    if (IsBetween(opCode[0], 0x24, 0x25)) { memcpy(operationType, &"AND", 3); ret = 1; }
-    if (IsBetween(opCode[0], 0x2C, 0x2D)) { memcpy(operationType, &"SUB", 3); ret = 1; }
-    if (IsBetween(opCode[0], 0x34, 0x35)) { memcpy(operationType, &"XOR", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0x04, 0x05)) { memcpy(operationType, &"ADD", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0x0C, 0x0D)) { memcpy(operationType, &"OR\0", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0x14, 0x15)) { memcpy(operationType, &"ADC", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0x1C, 0x1D)) { memcpy(operationType, &"SBB", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0x24, 0x25)) { memcpy(operationType, &"AND", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0x2C, 0x2D)) { memcpy(operationType, &"SUB", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0x34, 0x35)) { memcpy(operationType, &"XOR", 3); ret = 1; }
     bool _8bit = (opCode[0] % 2 == 0);
     /*if (opCode[0] == 0x04) { memcpy(opCMDOutput, &"ADD AL", 6); return 1; }
     if (opCode[0] == 0x05) { if (!size_override) { memcpy(opCMDOutput, &"ADD EAX", 7); } else { memcpy(opCMDOutput, &"ADD AX", 6); } return 1; }*/
@@ -225,6 +225,11 @@ int IsSpecial(unsigned char * opCode, char * opCMDOutput, bool size_override) {
 }
 int IsSpecialA(unsigned char * opCode, char * opCMDOutput) {
     if (IsBetween(opCode[0], 0xA0, 0xA3)) { memcpy(opCMDOutput, &"MOV", 3); return 1; }
+    return 0;
+}
+int IsShift(unsigned char * opCode, char * opCMDOutput) {
+    if (IsBetween(opCode[0], 0xC0, 0xC1)) { return 1; }
+    if (IsBetween(opCode[0], 0xD0, 0xD4)) { return 1; }
     return 0;
 }
 int IsJMPCall(unsigned char * opCode, char * opCMDOutput) {
@@ -246,7 +251,7 @@ int IsJCC(unsigned char * opCode, char * opCMDOutput) {
 int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_FILE_OFFSET) {
     int OpCodeOffset = 0;
     int OpCodeTotal = 0;
-    PrefixOut prefixOut = WritePrefixes(opCodes + OpCodeOffset, output, &OpCodeOffset);
+    PrefixOut prefixOut = WritePrefixes(opCodes + OpCodeOffset, output, &OpCodeOffset); output += prefixOut.prefixOffset;
     prefixOut.Address_Size_Override = (prefixOut.Address_Size_Override ^ !_32bit);
     prefixOut.Operand_Size_Override = (prefixOut.Operand_Size_Override ^ !_32bit);
     OpCodeTotal = OpCodeOffset;
@@ -314,6 +319,9 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
     } else if (IsOneByteOpCode(opCodes + OpCodeOffset, opCMD,prefixOut.Operand_Size_Override)) {
         OpCodeOffset++;
         sprintf(output, "%s", opCMD);
+    } else if (IsShift(opCodes + OpCodeOffset, opCMD)) {
+        int len_off = generateShift(opCodes + OpCodeOffset, output, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
+        OpCodeOffset += len_off;
     } else {
         if (opCodes[OpCodeOffset] == 0x69 || opCodes[OpCodeOffset] == 0x6B) { /// IMUL
             memcpy(opCMD, &"IMUL", 4);
@@ -348,6 +356,8 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
 
     //printf("\n\nREG: %s\n", reg);
     //printf("\nR/M: %s\n\n", rm);
+
+    output -= prefixOut.prefixOffset;
 
     return OpCodeOffset;
     printf("\nOp codes used (in bytes): %d\n", OpCodeOffset);

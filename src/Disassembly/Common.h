@@ -272,7 +272,7 @@ int getSIB(unsigned char * SIBByte, bool SizeOverride, unsigned char mod, bool w
                 sprintf(destination, "[%s + %s*%d + %s]", baseChar, indexChar, (int)pow(2.0, (double)scale), disp);
             } else { sprintf(destination, "[%s + %s*%d]", baseChar, indexChar, (int)pow(2.0, (double)scale)); }
 
-            printf("Index offset: %d", index);
+            //printf("Index offset: %d", index);
             //sprintf(destination, "[%s + %s*%d]", baseChar, indexChar, (int)pow(2.0, (double)scale));
 
             return 1 + (withDisp ? disp_len_off : 0);
@@ -471,6 +471,28 @@ int generateMOV(unsigned char * opCodes, char * output, bool address_override, b
         sprintf(output, "%s, %s", rm, imm);
         return rm_len_off + imm_len_off;
     }
+}
+
+char * ShiftNames = { "ROL\0ROR\0RCL\0RCR\0SHL\0SHR\0SAL\0SAR\0" };
+int generateShift(unsigned char * opCodes, char * output, bool address_override, bool size_override) { // opCodes should be given starting right after the prefixes. Including the action op code. 'output' is the direct output succeeding the prefix.
+    char regVal = (opCodes[1] >> 3) % 8;
+    char rmVal = opCodes[1] % 8;
+
+    bool s = opCodes[0] % 2; /// Is 16/32bit else 8bit
+
+    char * shiftName = ShiftNames + (regVal * 4);
+
+    char * rm = (char *)calloc(64, sizeof(char)); int rm_len_off = generateRM(opCodes, rm, address_override, size_override);
+    char * imm = (char *)calloc(5,sizeof(char)); int imm_len_off = 0;
+
+    if (opCodes[0] == 0xC0 || opCodes[0] == 0xC1) {
+        imm_len_off = generateIMM(opCodes + rm_len_off + 1, imm, address_override, size_override, 0b00);
+    } else if (opCodes[0] == 0xD0 || opCodes[0] == 0xD1) { memcpy(imm, &"1\0",2);
+    } else if (opCodes[0] == 0xD2 || opCodes[0] == 0xD3) { memcpy(imm, &"CL\0",3); }
+
+    sprintf(output, "%s %s, %s", shiftName, rm, imm);
+
+    return rm_len_off + imm_len_off + 1;
 }
 
 char * SingleOpCMD(unsigned char * opCodes, bool size_override) {
