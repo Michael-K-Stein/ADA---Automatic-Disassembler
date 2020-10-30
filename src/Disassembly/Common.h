@@ -82,7 +82,7 @@ int getRegisterName(char regValue, bool s, bool SizeOverride, char * destination
     }
 }
 int getRMName(char regValue, bool s, bool SizeOverride, char mod, char * destination) {
-    if (mod ==0b11){
+    if (mod == 0b11){
         if (s) {
             if (!SizeOverride) {
                 memcpy(destination, getRegisterName_32b(regValue), 3);
@@ -428,6 +428,10 @@ int generateIMM(unsigned char * opCodes, char * output, bool address_override, b
                 sprintf(output + 2 + (2 * i), "%.2X", opCodes[leng -1 - i]); }
             return leng;
         break; }
+        case 0b10: { ///    ADD r/m8, imm8
+            sprintf(output, "0x%.2X", opCodes[0]);
+            return 1;
+        break; }
         case 0b11: {///     ADD r/m32, imm8
             sprintf(output, "0x%.2X", opCodes[0]);
             return 1;
@@ -493,6 +497,86 @@ int generateShift(unsigned char * opCodes, char * output, bool address_override,
     sprintf(output, "%s %s, %s", shiftName, rm, imm);
 
     return rm_len_off + imm_len_off + 1;
+}
+
+char * ArithLogicNames = { "TEST\0TEST\0NOT\0\0NEG\0\0MUL\0\0IMUL\0DIV\0IMUL\0" };
+enum ARITH_LOGIC_NAMES {
+    TEST0,
+    TEST1,
+    NOT,
+    NEG,
+    MUL,
+    IMUL,
+    DIV,
+    IDIV
+};
+int generateArithLogic(unsigned char * opCodes, char * output, bool address_override, bool size_override) { // opCodes should be given starting right after the prefixes. Including the action op code. 'output' is the direct output succeeding the prefix.
+    char regVal = (opCodes[1] >> 3) % 8;
+    char rmVal = opCodes[1] % 8;
+
+    bool s = opCodes[1] % 2; /// Is 16/32bit else 8bit
+
+    //char * arithLogicName = ArithLogicNames + (regVal * 5);
+
+    char * rm = (char *)calloc(64, sizeof(char));
+    int rm_len_off = generateRM(opCodes, rm, address_override, size_override);
+    char * imm = (char *)calloc(5,sizeof(char)); int imm_len_off = 0;
+
+    if (opCodes[0] == 0xFE) {
+        if (regVal == 0) { ///          INC r/m8
+            sprintf(output, "INC %s", rm);
+        } else if (regVal == 1) {///    DEC r/m8
+            sprintf(output, "DEC %s", rm);
+        } else {
+            sprintf(output, "WTF?!?");
+        }
+    } else {
+        switch (regVal) {
+            case TEST0: {
+                imm_len_off = generateIMM(opCodes + rm_len_off + 1, imm, address_override, size_override, 0b00);
+                sprintf(output, "TEST %s, %s", rm, imm);
+                break; }
+            case TEST1: {
+                imm_len_off = generateIMM(opCodes + rm_len_off + 1, imm, address_override, size_override, 0b00);
+                sprintf(output, "TEST %s, %s", rm, imm);
+                break; }
+            case NOT: {
+                sprintf(output, "NOT %s", rm);
+                break; }
+            case NEG: {
+                sprintf(output, "NEG %s", rm);
+                break; }
+            case MUL: {
+                sprintf(output, "MUL %s", rm);
+                break; }
+            case IMUL: {
+                sprintf(output, "IMUL %s", rm);
+                break; }
+            case DIV: {
+                sprintf(output, "DIV %s", rm);
+                break; }
+            case IDIV: {
+                sprintf(output, "IDIV %s", rm);
+                break; }
+        }
+    }
+
+    return rm_len_off + imm_len_off + 1;
+}
+
+char * Multiple80Names = { "ADD\0OR\0\0ADC\0SBB\0AND\0SUB\0XOR\0CMP\0" };
+int generateMultiple80(unsigned char * opCodes, char * output, bool address_override, bool size_override) { // opCodes should be given starting right after the prefixes. Including the action op code. 'output' is the direct output succeeding the prefix.
+    char regVal = (opCodes[1] >> 3) % 8;
+    char rmVal = opCodes[1] % 8;
+
+    char * multiple80Name = Multiple80Names + (regVal * 4);
+
+    char * rm = (char *)calloc(64, sizeof(char));
+    int rm_len_off = generateRM(opCodes, rm, address_override, size_override);
+    char * imm = (char *)calloc(5,sizeof(char)); int imm_len_off = generateIMM(opCodes + rm_len_off + 1, imm, address_override, size_override, opCodes[0] % 4);
+
+    sprintf(output, "%s %s, %s", multiple80Name, rm, imm);
+    return 1 + rm_len_off + imm_len_off;
 }
 
 char * SingleOpCMD(unsigned char * opCodes, bool size_override) {

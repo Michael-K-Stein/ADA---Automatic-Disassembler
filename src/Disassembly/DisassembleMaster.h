@@ -112,13 +112,15 @@ int IsMove(unsigned char * opCode, char * opCMDOutput) {
 
     if (IsBetween(opCode[0], 0xC6, 0xC7)) { memcpy(opCMDOutput, &"MOV", 3); return 1; } /// MOV IMM
 }
-int IsRegularIMM(unsigned char * opCode, char * opCMDOutput) {
-    if (IsBetween(opCode[0], 0x80, 0x83)) { memcpy(opCMDOutput, &"ADD", 3); return 1; }
+int IsMultiple80(unsigned char * opCode, char * opCMDOutput) {
+    if (IsBetween(opCode[0], 0x80, 0x83)) { return 1; }
     return 0;
 }
 int IsOnlyIMM(unsigned char * opCode, char * opCMDOutput) {
     if (opCode[0] == 0x68) { memcpy(opCMDOutput, &"PUSH", 4); return 1; }
     if (opCode[0] == 0x6A) { memcpy(opCMDOutput, &"PUSH", 4); return 1; }
+    if (opCode[0] == 0xCD) { memcpy(opCMDOutput, &"INT", 3); return 1; }
+    if (IsBetween(opCode[0], 0xD4, 0xD5)) { memcpy(opCMDOutput, (opCode[0] % 2) ? &"AAD" : &"AAM", 3); return 1; }
     return 0;
 }
 int IsOneByteOpCode(unsigned char * opCode, char * opCMDOutput, bool size_override) {
@@ -227,9 +229,21 @@ int IsSpecialA(unsigned char * opCode, char * opCMDOutput) {
     if (IsBetween(opCode[0], 0xA0, 0xA3)) { memcpy(opCMDOutput, &"MOV", 3); return 1; }
     return 0;
 }
+int IsIO(unsigned char * opCode, char * opCMDOutput, bool size_override) {
+    if (opCode[0] == 0xE4) { memcpy(opCMDOutput, &"IN", 2); return 1; }
+    if (opCode[0] == 0xE5) { memcpy(opCMDOutput, size_override ? &"IN" : &"IN", 2); return 1; }
+    if (opCode[0] == 0xE6) { memcpy(opCMDOutput, &"OUT", 3); return 1; }
+    if (opCode[0] == 0xE7) { memcpy(opCMDOutput, size_override ? &"OUT" : &"OUT", 3); return 1; }
+    return 0;
+}
 int IsShift(unsigned char * opCode, char * opCMDOutput) {
     if (IsBetween(opCode[0], 0xC0, 0xC1)) { return 1; }
     if (IsBetween(opCode[0], 0xD0, 0xD4)) { return 1; }
+    return 0;
+}
+int IsArithLogic(unsigned char * opCode, char * opCMDOutput) {
+    if (IsBetween(opCode[0], 0xF6, 0xF7)) { return 1; }
+    if (opCode[0] == 0xFE) { return 1; }
     return 0;
 }
 int IsJMPCall(unsigned char * opCode, char * opCMDOutput) {
@@ -272,12 +286,8 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
         int movInstructions_len_off = generateMOV(opCodes + OpCodeOffset, movInstructions, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override, rm, rm_len_off);
         sprintf(output, "%s %s", opCMD, movInstructions);
         OpCodeOffset+= 1 + movInstructions_len_off;
-    } else if (IsRegularIMM(opCodes + OpCodeOffset, opCMD)) {
-        char * imm = (char *)calloc(32, sizeof(char)); int imm_len_off = generateIMM(opCodes + OpCodeOffset + rm_len_off + 1, imm, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override, opCodes[OpCodeOffset] % 4);
-        sprintf(output, "%s %s, %s", opCMD, rm, imm);
-        OpCodeOffset += rm_len_off + imm_len_off + 1;
     } else if (IsOnlyIMM(opCodes + OpCodeOffset, opCMD)) {
-        char * imm = (char *)calloc(32, sizeof(char)); int imm_len_off = generateIMM(opCodes + OpCodeOffset + 1, imm, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override, (opCodes[OpCodeOffset] % 4) + 1);
+        char * imm = (char *)calloc(32, sizeof(char)); int imm_len_off = generateIMM(opCodes + OpCodeOffset + 1, imm, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override, (IsBetween(opCodes[OpCodeOffset], 0xD4, 0xD5) || opCodes[OpCodeOffset] == 0xCD) ? 0b00 : ((opCodes[OpCodeOffset] % 4) + 1));
         sprintf(output, "%s %s", opCMD, imm);
         OpCodeOffset += imm_len_off + 1;
     } else if (IsSingularOpCode(opCodes + OpCodeOffset, opCMD)) {
@@ -322,6 +332,16 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
     } else if (IsShift(opCodes + OpCodeOffset, opCMD)) {
         int len_off = generateShift(opCodes + OpCodeOffset, output, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
         OpCodeOffset += len_off;
+    } else if (IsArithLogic(opCodes + OpCodeOffset, opCMD)) {
+        int len_off = generateArithLogic(opCodes + OpCodeOffset, output, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
+        OpCodeOffset += len_off;
+    } else if (IsIO(opCodes + OpCodeOffset, opCMD, prefixOut.Operand_Size_Override)) {
+        char * imm8 = (char *)calloc(7, sizeof(char)); int imm8_len_off = generateIMM(opCodes + OpCodeOffset + 1, imm8, false, false, 0b00);
+        char * reg = (char *)calloc(4, sizeof(char)); if (s) { memcpy(reg, prefixOut.Operand_Size_Override ? &"AX\0" : &"EAX", 3); } else { memcpy(reg, &"AL", 2); }
+        sprintf(output, "%s %s, %s", opCMD, d ? imm8 : reg, d ? reg : imm8);
+        OpCodeOffset += 1 + imm8_len_off;
+    } else if (IsMultiple80(opCodes + OpCodeOffset, opCMD)) {
+        OpCodeOffset += generateMultiple80(opCodes + OpCodeOffset, output, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
     } else {
         if (opCodes[OpCodeOffset] == 0x69 || opCodes[OpCodeOffset] == 0x6B) { /// IMUL
             memcpy(opCMD, &"IMUL", 4);
@@ -342,15 +362,19 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
         } else if (opCodes[OpCodeOffset] == 0x8F) {
             sprintf(output, "POP %s", rm);
             OpCodeOffset += 1 + rm_len_off;
-        } else if (opCodes[OpCodeOffset] == 0xC8 || opCodes[OpCodeOffset] == 0xC9) { /// ENTER or LEAVE
-            if (opCodes[OpCodeOffset] == 0xC8) {
-                char * imm16 = (char *)calloc(7, sizeof(char));
-                char * imm8 = (char *)calloc(7, sizeof(char));
-                int imm16_len_off = generateIMM(opCodes + OpCodeOffset + 1, imm16, true, true, 0b01);
-                int imm8_len_off = generateIMM(opCodes + OpCodeOffset + imm16_len_off + 1, imm8, false, false, 0b00);
-                sprintf(output, "ENTER %s, %s", imm16, imm8);
-                OpCodeOffset+=1 + imm16_len_off + imm8_len_off;
-            }
+        } else if (opCodes[OpCodeOffset] == 0xC8) { /// ENTER
+            char * imm16 = (char *)calloc(7, sizeof(char));
+            char * imm8 = (char *)calloc(7, sizeof(char));
+            int imm16_len_off = generateIMM(opCodes + OpCodeOffset + 1, imm16, true, true, 0b01);
+            int imm8_len_off = generateIMM(opCodes + OpCodeOffset + imm16_len_off + 1, imm8, false, false, 0b00);
+            sprintf(output, "ENTER %s, %s", imm16, imm8);
+            OpCodeOffset+=1 + imm16_len_off + imm8_len_off;
+        } else if (opCodes[OpCodeOffset] == 0xC4 || opCodes[OpCodeOffset] == 0xC5) {
+            memcpy(opCMD, (opCodes[OpCodeOffset] % 2) ? &"LDS" : &"LES", 3);
+            reg = (char *)calloc(4, sizeof(char));      reg_len_off = getRegisterName( ( opCodes[OpCodeOffset + 1] % 64 ) >> 3, true, prefixOut.Operand_Size_Override, reg  );
+            rm = (char *)calloc(64, sizeof(char));      rm_len_off = generateRM(opCodes + OpCodeOffset, rm, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
+            sprintf(output, "%s %s, %s", opCMD, reg, rm);
+            OpCodeOffset+= 1 + rm_len_off;
         }
     }
 
