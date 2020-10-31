@@ -159,7 +159,7 @@
 1603812897 c:\users\stein\desktop\proj 2020\2020\ADA\src\Disassembly\controlflow_conditional\jmp_call.h
 	"../Common.h"
 
-1602424498 c:\users\stein\desktop\proj 2020\2020\ada\src\source.h
+1604147678 c:\users\stein\desktop\proj 2020\2020\ada\src\source.h
 	"Parse/LoadFile.h"
 	"AnalyzingFuncs.h"
 	"PrintFuncs.h"
@@ -167,7 +167,7 @@
 	<stdio.h>
 	<memory.h>
 
-1602501535 c:\users\stein\desktop\proj 2020\2020\ada\src\parse\loadfile.h
+1604141455 c:\users\stein\desktop\proj 2020\2020\ada\src\parse\loadfile.h
 	"DOS_Format.h"
 	<string.h>
 	<stdio.h>
@@ -181,35 +181,43 @@
 	<stdbool.h>
 	<stdint.h>
 
-1602428302 c:\users\stein\desktop\proj 2020\2020\ada\src\analyzingfuncs.h
+1604142812 c:\users\stein\desktop\proj 2020\2020\ada\src\analyzingfuncs.h
 	"Analysis/GetStrings.h"
+	"Analysis/GetDisassembly.h"
 
-1602757744 c:\users\stein\desktop\proj 2020\2020\ada\src\analysis\getstrings.h
+1604142825 c:\users\stein\desktop\proj 2020\2020\ada\src\analysis\getstrings.h
 	"../Parse/DOS_Format.h"
 	"../PrintFuncs.h"
+	"CommonAnalysis.h"
 
 1604058130 c:\users\stein\desktop\proj 2020\2020\ada\src\printfuncs.h
 	<math.h>
 	<stdio.h>
 	<stdint.h>
 
-1604140423 c:\users\stein\desktop\proj 2020\2020\ada\src\disassembly\disassemblemaster.h
+1604148636 c:\users\stein\desktop\proj 2020\2020\ada\src\disassembly\disassemblemaster.h
 	"Common.h"
 	"ControlFlow_Conditional/JMP_Call.h"
 
-1604139970 c:\users\stein\desktop\proj 2020\2020\ada\src\disassembly\common.h
+1604144829 c:\users\stein\desktop\proj 2020\2020\ada\src\disassembly\common.h
 
 1603489428 c:\users\stein\desktop\proj 2020\2020\ada\src\disassembly\_00.h
 	"Common.h"
 
-1603812897 c:\users\stein\desktop\proj 2020\2020\ada\src\disassembly\controlflow_conditional\jmp_call.h
+1604141466 c:\users\stein\desktop\proj 2020\2020\ada\src\disassembly\controlflow_conditional\jmp_call.h
 	"../Common.h"
 
-1604140356 source:c:\users\stein\desktop\proj 2020\2020\ada\main.cpp
+1604147638 source:c:\users\stein\desktop\proj 2020\2020\ada\main.cpp
 	<map>
 	<iostream>
 	<string>
 	"src/source.h"
 	"src/Disassembly/DisassembleMaster.h"
 	"stdio.h"
+
+1604148848 c:\users\stein\desktop\proj 2020\2020\ada\src\analysis\getdisassembly.h
+	"CommonAnalysis.h"
+	"../../src/Disassembly/DisassembleMaster.h"
+
+1604142826 c:\users\stein\desktop\proj 2020\2020\ada\src\analysis\commonanalysis.h
 

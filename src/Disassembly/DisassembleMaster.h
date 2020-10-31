@@ -12,7 +12,8 @@ typedef struct PrefixOut {
 };
 
 typedef struct EXTRA { /// Extra information which might need to be passed between functions
-    bool DEBUG_MODE;
+    bool DEBUG_MODE; // Prints extra information during runtime.
+    bool FORCE; // Forcefully continue if you encounter an unknown/ invalid opcode. This is UNRELIABLE!
 };
 
 PrefixOut WritePrefixes(unsigned char * opCodes, char * output, int *OpCodeOffset) {
@@ -142,6 +143,7 @@ int IsOneByteOpCode(unsigned char * opCode, char * opCMDOutput, bool size_overri
         case 0x9B: { memcpy(opCMDOutput, &"WAIT", 4); return 1; break; }
         case 0xCC: { memcpy(opCMDOutput, &"INT3", 4); return 1; break; }
         case 0xCE: { memcpy(opCMDOutput, &"INTO", 4); return 1; break; }
+        case 0x90: { memcpy(opCMDOutput, &"NOP", 3); return 1; break; }
         case 0x98: { memcpy(opCMDOutput, size_override ? &"CBW\0" : &"CWDE", 4); return 1; break; }
         case 0x99: { memcpy(opCMDOutput, size_override ? &"CWD" : &"CDQ", 3); return 1; break; }
         case 0x9C: { memcpy(opCMDOutput, size_override ? &"PUSHF\0" : &"PUSHFD", 6); return 1; break; }
@@ -209,7 +211,7 @@ int IsSegment(unsigned char * opCode, char * opCMDOutput) {
 int IsSpecial(unsigned char * opCode, char * opCMDOutput, bool size_override) {
     int ret = 0;
     char * operationType = (char *)calloc(5, sizeof(char));
-    if (IsBetween(opCode[0], 0x90, 0x97)) {memcpy(opCMDOutput, &"XCHG", 4); return 1; }
+    if (IsBetween(opCode[0], 0x91, 0x97)) {memcpy(opCMDOutput, &"XCHG", 4); return 1; }
     else if (IsBetween(opCode[0], 0x04, 0x05)) { memcpy(operationType, &"ADD", 3); ret = 1; }
     else if (IsBetween(opCode[0], 0x0C, 0x0D)) { memcpy(operationType, &"OR\0", 3); ret = 1; }
     else if (IsBetween(opCode[0], 0x14, 0x15)) { memcpy(operationType, &"ADC", 3); ret = 1; }
@@ -388,7 +390,19 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
             sprintf(output, "%s %s, %s", opCMD, reg, rm);
             OpCodeOffset+= 1 + rm_len_off;
         } else if (opCodes[OpCodeOffset] == 0xFF) { /// INC / DEC / CALL / CALL FAR / JMP / JMP FAR / PUSH
-            OpCodeOffset += generateMultipleFF(opCodes + OpCodeOffset, output, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
+            if (opCodes[OpCodeOffset+1] == 0xFF) {
+                /// 0xFF 0xFF is a signature that the code section is over.
+                sprintf(output, "=== === ENDS === ===");
+                OpCodeOffset = 0xFFFF;
+            } else {
+                OpCodeOffset += generateMultipleFF(opCodes + OpCodeOffset, output, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);}
+        } else if (opCodes[OpCodeOffset] == 0xC2 || opCodes[OpCodeOffset] == 0xCA) {
+            if (opCodes[OpCodeOffset] == 0xC2) { memcpy(opCMD, &"RETN", 4); }
+            else if (opCodes[OpCodeOffset] == 0xCA) { memcpy(opCMD, &"RETF", 4); }
+            char * imm16 = (char *)calloc(7, sizeof(char));
+            int imm16_len_off = generateIMM(opCodes + OpCodeOffset + 1, imm16, true, true, 0b01);
+            sprintf(output, "%s %s", opCMD, imm16);
+            OpCodeOffset += 1 + imm16_len_off;
         }
     }
 

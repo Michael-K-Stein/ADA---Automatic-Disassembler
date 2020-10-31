@@ -29,19 +29,11 @@ int getASMInput(unsigned char * dest) {
     return len;
 }
 
-char * getOriginalOpCodes(unsigned char * buf, int length) {
-    char * origOpCodes = (char *)calloc(length, 3 * sizeof(char));
-    for (int ind = 0; ind < length; ind++) {
-        sprintf(origOpCodes + (ind * 3), "%.2X ", buf[ind]);
-    }
-
-    return origOpCodes;
-}
-
 #define PRETTY_PRINTING true
 
 int main()
 {
+    /*
     EXTRA extra; extra.DEBUG_MODE = false;
 
     FILE * fPtr =fopen("disassTest", "rb");
@@ -57,7 +49,7 @@ int main()
             int opCodeOffset = Disassemble(buf + codeOffset, dec, false, codeOffset, extra);
             if (PRETTY_PRINTING) {
                 char * origOpCodes = (char *)calloc(opCodeOffset, 3 * sizeof(char)); memcpy(origOpCodes, getOriginalOpCodes(buf + codeOffset, opCodeOffset), (opCodeOffset * 3) - 1);
-                char * tableDelim = (char *)calloc(5, sizeof(char)); for (int i = 0; i < 3 - ceil(opCodeOffset/2.0); i++) { tableDelim[i] = '\t'; }
+                char * tableDelim = (char *)calloc(6, sizeof(char)); for (int i = 0; i < 4 - ceil(opCodeOffset /2.0); i++) { tableDelim[i] = '\t'; }
                 printf("\n0x%.2X\t|\t%s\t%s%s", codeOffset, origOpCodes, tableDelim, dec);
             } else {
                 printf("\n%s : %d", dec, opCodeOffset);
@@ -76,8 +68,15 @@ int main()
             printf("\n\n\n%s : %d", dec, opCodeOffset); printf("\n\n\n");
             codeOffset+= opCodeOffset;
         }
+    }*/
+    if(StartUp()) {
+        printf("\n\n\nSomething went wrong!\n\n\n");
+
+        int abc; std::cin >> abc;
+    } else {
+        int abc; std::cin >> abc;
     }
-    //return StartUp();
+
 
     return 0;
 }

@@ -2,10 +2,15 @@
 #define ANALYZINGFUNCS_H_INCLUDED
 
 #include "Analysis/GetStrings.h"
+#include "Analysis/GetDisassembly.h"
 
 int Analyze(char * funcName, Portable_Executable * PE) {
 
-    if (!strcmp(funcName, "strings")) {
+    if (!strcmp(funcName, "exit")) {
+        exit(0);
+    } else if (!strcmp(funcName, "disassemble")) {
+        PrintDisassembly(PE);
+    } else if (!strcmp(funcName, "strings")) {
         int minLength;
         printf("Function %s requires a minimum length: ", funcName);
         if (scanf("%d", &minLength)) {

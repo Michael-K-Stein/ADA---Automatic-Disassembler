@@ -229,15 +229,15 @@ int getSIB(unsigned char * SIBByte, bool SizeOverride, unsigned char mod, bool w
 
     if (base == 0b101) { /// Include disp, so request one more byte
         if (index == 0b100) { /// disregard index
-            char * baseChar = (char *)malloc(4 * sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
-            char * disp = (char *)malloc(32 * sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
+            char * baseChar = (char *)calloc(4, sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
+            char * disp = (char *)calloc(32, sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
             sprintf(destination, "[%s]", disp);
 
             return 1 + disp_len_off;
         } else {
-            char * indexChar = (char *)malloc(4 * sizeof(char)); int index_len = getRMName(index, true, SizeOverride, mod, indexChar);
-            char * baseChar = (char *)malloc(4 * sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
-            char * disp = (char *)malloc(32 * sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
+            char * indexChar = (char *)calloc(4, sizeof(char)); int index_len = getRMName(index, true, SizeOverride, mod, indexChar);
+            char * baseChar = (char *)calloc(4, sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
+            char * disp = (char *)calloc(32, sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
 
             sprintf(destination, "[%s*%d + %s]", indexChar, (int)pow(2.0, (double)scale), disp);
 
@@ -245,18 +245,18 @@ int getSIB(unsigned char * SIBByte, bool SizeOverride, unsigned char mod, bool w
         }
     } else {
         if (index == 0b100) { /// disregard index
-            char * baseChar = (char *)malloc(4 * sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
-            if (withDisp) { char * disp = (char *)malloc(32 * sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
+            char * baseChar = (char *)calloc(4, sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
+            if (withDisp) { char * disp = (char *)calloc(32, sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
                 sprintf(destination, "[%s + %s]", baseChar, disp);
             } else { sprintf(destination, "[%s]", baseChar); }
 
             return 1 + (withDisp ? disp_len_off : 0);
         } else {
-            char * indexChar = (char *)malloc(4 * sizeof(char)); int index_len = getRMName(index, true, SizeOverride, mod, indexChar);
-            char * baseChar = (char *)malloc(4 * sizeof(char)); int disp_len_off = getRMName(base, true, SizeOverride, mod, baseChar);
+            char * indexChar = (char *)calloc(4, sizeof(char)); int index_len = getRMName(index, true, SizeOverride, mod, indexChar);
+            char * baseChar = (char *)calloc(4, sizeof(char)); int disp_len_off = getRMName(base, true, SizeOverride, mod, baseChar);
 
             if (withDisp) {
-                char * disp = (char *)malloc(32 * sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
+                char * disp = (char *)calloc(32, sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
                 sprintf(destination, "[%s + %s*%d + %s]", baseChar, indexChar, (int)pow(2.0, (double)scale), disp);
             } else { sprintf(destination, "[%s + %s*%d]", baseChar, indexChar, (int)pow(2.0, (double)scale)); }
 

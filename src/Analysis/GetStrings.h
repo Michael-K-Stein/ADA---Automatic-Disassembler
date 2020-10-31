@@ -4,14 +4,13 @@
 #include "../Parse/DOS_Format.h"
 #include "../PrintFuncs.h"
 
+#include "CommonAnalysis.h"
+
 /**
     Constant strings in Portable Executable files should be found in the section ".rdata".
     These "valid" strings will also be suffixed by '\0' (the NULL character).
 */
 
-unsigned char rdataName[] = { 0x2E, 0x72, 0x64, 0x61, 0x74, 0x61, 0x0, 0x0 };
-unsigned char rsrcName[] = { 0x2E, 0x72, 0x73, 0x72, 0x63, 0x0, 0x0, 0x0 };
-unsigned char textName[] = { 0x2E, 0x74, 0x65, 0x78, 0x74, 0x0, 0x0, 0x0 };
 unsigned char * sectionNames[] = { rdataName , rsrcName , textName };
 /// ========= ADD IMPLEMENTATION OF .RSRC
 
