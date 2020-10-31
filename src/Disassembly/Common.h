@@ -579,6 +579,26 @@ int generateMultiple80(unsigned char * opCodes, char * output, bool address_over
     return 1 + rm_len_off + imm_len_off;
 }
 
+char * MultipleFFNames = { "INC\0\0DEC\0\0CALL\0CALLFJMP\0\0JMPF\0PUSH\0" };
+int generateMultipleFF(unsigned char * opCodes, char * output, bool address_override, bool size_override) { // opCodes should be given starting right after the prefixes. Including the action op code. 'output' is the direct output succeeding the prefix.
+    char regVal = (opCodes[1] >> 3) % 8;
+    char rmVal = opCodes[1] % 8;
+
+    char * multipleFFName = (char *)calloc(16, sizeof(char));
+    if (regVal == 3 || regVal == 5) {
+        char * multipleFFNameTMP = MultipleFFNames + ((regVal - 1) * 5);
+        sprintf(multipleFFName, "%s FAR", multipleFFNameTMP);
+    } else {
+        multipleFFName = MultipleFFNames + (regVal * 5);
+    }
+
+    char * rm = (char *)calloc(64, sizeof(char));
+    int rm_len_off = generateRM(opCodes, rm, address_override, size_override);
+
+    sprintf(output, "%s %s", multipleFFName, rm);
+    return 1 + rm_len_off;
+}
+
 char * SingleOpCMD(unsigned char * opCodes, bool size_override) {
     char reg_val = opCodes[0] % 8;
     char * reg = (char *)calloc(4, sizeof(char)); getRegisterName(reg_val, true, size_override, reg);

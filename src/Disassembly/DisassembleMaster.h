@@ -97,6 +97,8 @@ int IsRegular(unsigned char * opCode, char * opCMDOutput) {
     if (IsBetween(opCode[0], 0x20, 0x23)) { memcpy(opCMDOutput, &"AND", 3); return 1; }
     if (IsBetween(opCode[0], 0x28, 0x2B)) { memcpy(opCMDOutput, &"SUB", 3); return 1; }
     if (IsBetween(opCode[0], 0x30, 0x33)) { memcpy(opCMDOutput, &"XOR", 3); return 1; }
+    if (IsBetween(opCode[0], 0x38, 0x3B)) { memcpy(opCMDOutput, &"CMP", 3); return 1; }
+    if (IsBetween(opCode[0], 0x84, 0x85)) { memcpy(opCMDOutput, &"TEST", 4); return 1; }
     if (IsBetween(opCode[0], 0x86, 0x87)) { memcpy(opCMDOutput, &"XCHG", 4); return 1; }
     if (IsBetween(opCode[0], 0x88, 0x8B)) { memcpy(opCMDOutput, &"MOV", 3); return 1; }
     if (IsBetween(opCode[0], 0x62, 0x62)) { memcpy(opCMDOutput, &"BOUND", 5); return 1; }
@@ -146,6 +148,8 @@ int IsOneByteOpCode(unsigned char * opCode, char * opCMDOutput, bool size_overri
         case 0x9F: { memcpy(opCMDOutput, &"LAHF", 4); return 1; break; }
         case 0xA4: { memcpy(opCMDOutput, &"MOVSB", 5); return 1; break; }
         case 0xA5: { memcpy(opCMDOutput, size_override ? &"MOVSW" : &"MOVSD", 5); return 1; break; }
+        case 0xA6: { memcpy(opCMDOutput, &"CMPSB", 5); return 1; break; }
+        case 0xA7: { memcpy(opCMDOutput, size_override ? &"CMPSW" : &"CMPSD", 5); return 1; break; }
         case 0xAA: { memcpy(opCMDOutput, &"STOSB", 5); return 1; break; }
         case 0xAB: { memcpy(opCMDOutput, size_override ? &"STOSW" : &"STOSD", 5); return 1; break; }
         case 0xAC: { memcpy(opCMDOutput, &"LODSB", 5); return 1; break; }
@@ -202,7 +206,7 @@ int IsSegment(unsigned char * opCode, char * opCMDOutput) {
 }
 int IsSpecial(unsigned char * opCode, char * opCMDOutput, bool size_override) {
     int ret = 0;
-    char * operationType = (char *)calloc(4, sizeof(char));
+    char * operationType = (char *)calloc(5, sizeof(char));
     if (IsBetween(opCode[0], 0x90, 0x97)) {memcpy(opCMDOutput, &"XCHG", 4); return 1; }
     else if (IsBetween(opCode[0], 0x04, 0x05)) { memcpy(operationType, &"ADD", 3); ret = 1; }
     else if (IsBetween(opCode[0], 0x0C, 0x0D)) { memcpy(operationType, &"OR\0", 3); ret = 1; }
@@ -211,6 +215,8 @@ int IsSpecial(unsigned char * opCode, char * opCMDOutput, bool size_override) {
     else if (IsBetween(opCode[0], 0x24, 0x25)) { memcpy(operationType, &"AND", 3); ret = 1; }
     else if (IsBetween(opCode[0], 0x2C, 0x2D)) { memcpy(operationType, &"SUB", 3); ret = 1; }
     else if (IsBetween(opCode[0], 0x34, 0x35)) { memcpy(operationType, &"XOR", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0x3C, 0x3D)) { memcpy(operationType, &"CMP", 3); ret = 1; }
+    else if (IsBetween(opCode[0], 0xA8, 0xA9)) { memcpy(operationType, &"TEST", 4); ret = 1; }
     bool _8bit = (opCode[0] % 2 == 0);
     /*if (opCode[0] == 0x04) { memcpy(opCMDOutput, &"ADD AL", 6); return 1; }
     if (opCode[0] == 0x05) { if (!size_override) { memcpy(opCMDOutput, &"ADD EAX", 7); } else { memcpy(opCMDOutput, &"ADD AX", 6); } return 1; }*/
@@ -256,9 +262,16 @@ int IsJMPCall(unsigned char * opCode, char * opCMDOutput) {
 }
 
 char * JCCCMD = { "JO\0\0JNO\0JB\0\0JNB\0JE\0\0JNE\0JBE\0JA\0\0JS\0\0JNS\0JPE\0JPO\0JL\0\0JGE\0JLE\0JG\0\0" };
-int IsJCC(unsigned char * opCode, char * opCMDOutput) {
+int IsJCC(unsigned char * opCode, char * opCMDOutput, bool size_override) {
     if (IsBetween(opCode[0], 0x70, 0x7F)) { memcpy(opCMDOutput, JCCCMD + ((int)(opCode[0] - 0x70) * 4), 3); return 1; }
     if (opCode[0] == 0x0F && IsBetween(opCode[1], 0x80, 0x8F)) { memcpy(opCMDOutput, JCCCMD + ((int)(opCode[1] - 0x80) * 4), 3); return 1; }
+
+    if (opCode[0] == 0xE0) { memcpy(opCMDOutput, &"LOOPNE", 6); return 1; }
+    if (opCode[0] == 0xE1) { memcpy(opCMDOutput, &"LOOPE", 5); return 1; }
+    if (opCode[0] == 0xE2) { memcpy(opCMDOutput, &"LOOP", 4); return 1; }
+
+    if (opCode[0] == 0xE3) { memcpy(opCMDOutput, size_override ? &"JCXZ\0" : &"JECXZ", 5); return 1; }
+
     return 0;
 }
 
@@ -320,11 +333,11 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
         char * disp = (char *)calloc(16, sizeof(char));
         OpCodeOffset += generateJMPCall(opCodes + OpCodeOffset, disp, prefixOut.Operand_Size_Override);
         sprintf(output, "%s %s", opCMD, disp);
-    } else if (IsJCC(opCodes + OpCodeOffset, opCMD)) {
+    } else if (IsJCC(opCodes + OpCodeOffset, opCMD, prefixOut.Operand_Size_Override)) {
         char * disp = (char *)calloc(6, sizeof(char));
         bool near = false;
         OpCodeOffset++; if (opCodes[OpCodeOffset - 1] == 0x0F) { OpCodeOffset++; near = true; }
-        OpCodeOffset += getDisplacementJcc(opCodes + OpCodeOffset, disp, TOTAL_FILE_OFFSET, near, prefixOut.Operand_Size_Override);
+        OpCodeOffset += getDisplacementJcc(opCodes + OpCodeOffset, disp, TOTAL_FILE_OFFSET + OpCodeOffset - (near ? 2 : 1), near, prefixOut.Operand_Size_Override);
         sprintf(output, "%s %s", opCMD, disp);
     } else if (IsOneByteOpCode(opCodes + OpCodeOffset, opCMD,prefixOut.Operand_Size_Override)) {
         OpCodeOffset++;
@@ -375,6 +388,8 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
             rm = (char *)calloc(64, sizeof(char));      rm_len_off = generateRM(opCodes + OpCodeOffset, rm, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
             sprintf(output, "%s %s, %s", opCMD, reg, rm);
             OpCodeOffset+= 1 + rm_len_off;
+        } else if (opCodes[OpCodeOffset] == 0xFF) { /// INC / DEC / CALL / CALL FAR / JMP / JMP FAR / PUSH
+            OpCodeOffset += generateMultipleFF(opCodes + OpCodeOffset, output, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
         }
     }
 
