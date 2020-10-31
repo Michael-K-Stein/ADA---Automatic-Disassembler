@@ -9,8 +9,6 @@
 typedef struct Bit {
     unsigned x:1;
 } bit;
-//typedef struct MOD { unsigned x:2; } mod;
-//typedef struct REG { unsigned x:3; } reg;
 
 enum MOD {
     ZERO_BYTE_DISPLACEMENT,
@@ -19,7 +17,7 @@ enum MOD {
     FIELD_IS_REGISTER
 };
 
-char getMod(unsigned char * opCodes) { /*printf("MOD: %d\n", opCodes[1] >> 6);*/ return opCodes[1] >> 6; }
+char getMod(unsigned char * opCodes) { return opCodes[1] >> 6; }
 
 /// Prefixes
 unsigned char PREFIXES_LIST[11] = { 0xF0, 0x66, 0x67, 0xF3, 0xF2, 0x26, 0x2E, 0x36, 0x3E, 0x64, 0x65 };
@@ -54,15 +52,12 @@ char * REG_VALUE_8b = {"ALCLDLBLAHCHDHBH"};
 char * REG_VALUE_16b = {"AXCXDXBXSPBPSIDI"};
 char * REG_VALUE_32b = {"EAXECXEDXEBXESPEBPESIEDI"};
 char * getRegisterName_8b(char regValue) { // 2.330sec for 10,000,000 runs
-    //printf("Register given is: %s\n", REG_VALUE_8b + (regValue*2));
     return REG_VALUE_8b + (regValue*2);
 }
 char * getRegisterName_16b(char regValue) {
-    //printf("Register given is: %s\n", REG_VALUE_16b + (regValue*2));
     return REG_VALUE_16b + (regValue*2);
 }
 char * getRegisterName_32b(char regValue) {
-    //printf("Register given is: %s\n", REG_VALUE_32b + (regValue*3));
     return REG_VALUE_32b + (regValue*3);
 }
 
@@ -230,16 +225,13 @@ int getSIB(unsigned char * SIBByte, bool SizeOverride, unsigned char mod, bool w
     index = (SIBByte[0] % 64) >> 3;
     base = (SIBByte[0] % 8);
 
-    //printf("\nSIB Scale: %d | Mult: %d\n", scale, (int)pow(2.0, (double)scale));
-
     int disp_len_off = 0;
 
     if (base == 0b101) { /// Include disp, so request one more byte
         if (index == 0b100) { /// disregard index
             char * baseChar = (char *)malloc(4 * sizeof(char)); int base_len = getRMName(base, true, SizeOverride, mod, baseChar);
             char * disp = (char *)malloc(32 * sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
-            /*if (withDisp) {*/sprintf(destination, "[%s]", disp);
-            //} else { sprintf(destination, "[%s]", baseChar); }
+            sprintf(destination, "[%s]", disp);
 
             return 1 + disp_len_off;
         } else {
@@ -263,17 +255,10 @@ int getSIB(unsigned char * SIBByte, bool SizeOverride, unsigned char mod, bool w
             char * indexChar = (char *)malloc(4 * sizeof(char)); int index_len = getRMName(index, true, SizeOverride, mod, indexChar);
             char * baseChar = (char *)malloc(4 * sizeof(char)); int disp_len_off = getRMName(base, true, SizeOverride, mod, baseChar);
 
-            // Resize to proper size
-            //indexChar = (char *)malloc(index_len * sizeof(char)); getRegisterName(index, s, SizeOverride, indexChar);
-            //baseChar =(char *)malloc(base_len * sizeof(char)); getRegisterName(base, s, SizeOverride, baseChar);
-
             if (withDisp) {
                 char * disp = (char *)malloc(32 * sizeof(char)); disp_len_off = getDisplacement(SIBByte + 1, mod, SizeOverride, disp);
                 sprintf(destination, "[%s + %s*%d + %s]", baseChar, indexChar, (int)pow(2.0, (double)scale), disp);
             } else { sprintf(destination, "[%s + %s*%d]", baseChar, indexChar, (int)pow(2.0, (double)scale)); }
-
-            //printf("Index offset: %d", index);
-            //sprintf(destination, "[%s + %s*%d]", baseChar, indexChar, (int)pow(2.0, (double)scale));
 
             return 1 + (withDisp ? disp_len_off : 0);
         }
@@ -345,7 +330,6 @@ int generateRM_ONE_BYTE_DISPLACEMENT(unsigned char * opCodes, char * output, cha
         }
     } else { // 32 bit
         if (rmVal == 0b100) { /// SIB
-            //char * sib = (char *)calloc(16, sizeof(char));
             return 1 + getSIB(opCodes + 2, address_override, 0b01, true, output);
         } else {
             sprintf(output, "[XXX + %s]", disp);
@@ -381,7 +365,6 @@ int generateRM_FOUR_BYTE_DISPLACEMENT(unsigned char * opCodes, char * output, ch
         return 0;
     } else { // 32 bit
         if (rmVal == 0b100) { /// SIB
-            //char * sib = (char *)calloc(16, sizeof(char));
             return 1 + getSIB(opCodes + 2, address_override, 0b10, true, output);
         } else {
             sprintf(output, "[XXX + %s]", disp);
@@ -448,7 +431,7 @@ int generateMOV(unsigned char * opCodes, char * output, bool address_override, b
         char * seg = (char *)calloc(3, sizeof(char)); memcpy(seg, getSegmentName( (opCodes[1] >> 3) % 8 ), 2);
 
         char mod = getMod(opCodes);
-        if (mod == FIELD_IS_REGISTER) { /// RM is wrong here since a seg can only work with 16bit
+        if (mod == FIELD_IS_REGISTER) { /// RM is wrong in this case, since a segments are only 16bit, always.
             rm = (char *)calloc(4,sizeof(char));
             getRegisterName(opCodes[1] % 8,true,size_override,rm);
             rm_len_off = 1;
@@ -516,8 +499,6 @@ int generateArithLogic(unsigned char * opCodes, char * output, bool address_over
 
     bool s = opCodes[1] % 2; /// Is 16/32bit else 8bit
 
-    //char * arithLogicName = ArithLogicNames + (regVal * 5);
-
     char * rm = (char *)calloc(64, sizeof(char));
     int rm_len_off = generateRM(opCodes, rm, address_override, size_override);
     char * imm = (char *)calloc(5,sizeof(char)); int imm_len_off = 0;
@@ -528,7 +509,8 @@ int generateArithLogic(unsigned char * opCodes, char * output, bool address_over
         } else if (regVal == 1) {///    DEC r/m8
             sprintf(output, "DEC %s", rm);
         } else {
-            sprintf(output, "WTF?!?");
+            /// If you reach here, someone either messed with the binary code and the executable is broken... or there is a bug somewhere which miscalculated the opcode offset.
+            sprintf(output, "ERROR!!! Please see Common.h:513");
         }
     } else {
         switch (regVal) {
@@ -602,7 +584,6 @@ int generateMultipleFF(unsigned char * opCodes, char * output, bool address_over
 char * SingleOpCMD(unsigned char * opCodes, bool size_override) {
     char reg_val = opCodes[0] % 8;
     char * reg = (char *)calloc(4, sizeof(char)); getRegisterName(reg_val, true, size_override, reg);
-    //sprintf(destination, "%s", reg);
     return reg;
 }
 

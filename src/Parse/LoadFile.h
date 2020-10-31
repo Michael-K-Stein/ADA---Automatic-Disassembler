@@ -3,6 +3,22 @@
     Into the given pointer (PE), which must have already been initialized!
 */
 
+/*
+Reference:
+
+.text: Code
+.data: Initialized data
+.bss: Uninitialized data
+.rdata: Const/read-only (and initialized) data
+.edata: Export descriptors
+.idata: Import descriptors
+.reloc: Relocation table (for code instructions with absolute addressing when
+          the module could not be loaded at its preferred base address)
+.rsrc: Resources (icon, bitmap, dialog, ...)
+.tls: __declspec(thread) data (Fails with dynamically loaded DLLs -> hard to find bugs)
+
+*/
+
 #ifndef __ParseLoadFile
 #define __ParseLoadFile
 

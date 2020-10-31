@@ -1,18 +1,3 @@
-/*
-Reference:
-
-.text: Code
-.data: Initialized data
-.bss: Uninitialized data
-.rdata: Const/read-only (and initialized) data
-.edata: Export descriptors
-.idata: Import descriptors
-.reloc: Relocation table (for code instructions with absolute addressing when
-          the module could not be loaded at its preferred base address)
-.rsrc: Resources (icon, bitmap, dialog, ...)
-.tls: __declspec(thread) data (Fails with dynamically loaded DLLs -> hard to find bugs)
-
-*/
 #include <map>
 #include <iostream>
 #include <string>
@@ -44,10 +29,21 @@ int getASMInput(unsigned char * dest) {
     return len;
 }
 
+char * getOriginalOpCodes(unsigned char * buf, int length) {
+    char * origOpCodes = (char *)calloc(length, 3 * sizeof(char));
+    for (int ind = 0; ind < length; ind++) {
+        sprintf(origOpCodes + (ind * 3), "%.2X ", buf[ind]);
+    }
 
-//extern "C" void foo(); // one way
+    return origOpCodes;
+}
+
+#define PRETTY_PRINTING true
+
 int main()
 {
+    EXTRA extra; extra.DEBUG_MODE = false;
+
     FILE * fPtr =fopen("disassTest", "rb");
     uint64_t fsize = getFileSize("disassTest");
     unsigned char * buf = (unsigned char *)calloc(fsize, sizeof(unsigned char));
@@ -58,8 +54,14 @@ int main()
         int codeOffset = 0;
         while (codeOffset < fsize) {
             char * dec = (char *)calloc(64, sizeof(char));
-            int opCodeOffset = Disassemble(buf + codeOffset, dec, false, codeOffset);
-            printf("\n%s : %d", dec, opCodeOffset);
+            int opCodeOffset = Disassemble(buf + codeOffset, dec, false, codeOffset, extra);
+            if (PRETTY_PRINTING) {
+                char * origOpCodes = (char *)calloc(opCodeOffset, 3 * sizeof(char)); memcpy(origOpCodes, getOriginalOpCodes(buf + codeOffset, opCodeOffset), (opCodeOffset * 3) - 1);
+                char * tableDelim = (char *)calloc(5, sizeof(char)); for (int i = 0; i < 3 - ceil(opCodeOffset/2.0); i++) { tableDelim[i] = '\t'; }
+                printf("\n0x%.2X\t|\t%s\t%s%s", codeOffset, origOpCodes, tableDelim, dec);
+            } else {
+                printf("\n%s : %d", dec, opCodeOffset);
+            }
             codeOffset+= opCodeOffset;
         }
     }
@@ -70,7 +72,7 @@ int main()
         int codeOffset = 0;
         while (codeOffset < len) {
             char * dec = (char *)calloc(64, sizeof(char));
-            int opCodeOffset = Disassemble(input + codeOffset, dec, true, codeOffset);
+            int opCodeOffset = Disassemble(input + codeOffset, dec, true, codeOffset, extra);
             printf("\n\n\n%s : %d", dec, opCodeOffset); printf("\n\n\n");
             codeOffset+= opCodeOffset;
         }

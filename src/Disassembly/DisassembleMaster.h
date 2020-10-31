@@ -2,20 +2,23 @@
 #define DISASSEMBLEMASTER_H_INCLUDED
 
 #include "Common.h"
-#include "_00.h"
 #include "ControlFlow_Conditional/JMP_Call.h"
 
 typedef struct PrefixOut {
-    int prefixOffset;
+    int prefixOffset; /// The offset from which to start writing the opcode names, not the offset of how many bytes are used for prefixes.
 
     bool Operand_Size_Override;
     bool Address_Size_Override;
 };
 
+typedef struct EXTRA { /// Extra information which might need to be passed between functions
+    bool DEBUG_MODE;
+};
+
 PrefixOut WritePrefixes(unsigned char * opCodes, char * output, int *OpCodeOffset) {
     unsigned char * prefixes = (unsigned char *)calloc(sizeof(unsigned char), 4);
 
-    int offset = 0;
+    int offset = 0; /// The offset from which to start writing the opcode names, not the offset of how many bytes are used for prefixes.
 
     bool Operand_Size_Override = false;
     bool Address_Size_Override = false;
@@ -32,7 +35,6 @@ PrefixOut WritePrefixes(unsigned char * opCodes, char * output, int *OpCodeOffse
     for (int i = 0; i < 4; i++) {
         if (prefixes[i] != 0x00) {
             *OpCodeOffset+=1;
-            //printf("0x%02X\n", prefixes[i]);
             switch (prefixes[i]) {
             case LOCK:
                 memcpy(output + offset, &"LOCK ",5);
@@ -105,7 +107,7 @@ int IsRegular(unsigned char * opCode, char * opCMDOutput) {
     return 0;
 }
 int IsMove(unsigned char * opCode, char * opCMDOutput) {
-    /** This is very well covered in IsRegular */ // if (IsBetween(opCode[0], 0x88, 0x8B)) { memcpy(opCMDOutput, &"MOV", 3); return 1; } /// MOV REG
+    /* if (IsBetween(opCode[0], 0x88, 0x8B)) { memcpy(opCMDOutput, &"MOV", 3); return 1; } /// MOV REG */ /** This is very well covered in IsRegular */
     if (opCode[0] == 0x8C) { memcpy(opCMDOutput, &"MOV", 3); return 1; } /// 	MOV r/m16,Sreg
     if (opCode[0] == 0x8E) { memcpy(opCMDOutput, &"MOV", 3); return 1; } ///    MOV Sreg,r/m16
 
@@ -218,8 +220,6 @@ int IsSpecial(unsigned char * opCode, char * opCMDOutput, bool size_override) {
     else if (IsBetween(opCode[0], 0x3C, 0x3D)) { memcpy(operationType, &"CMP", 3); ret = 1; }
     else if (IsBetween(opCode[0], 0xA8, 0xA9)) { memcpy(operationType, &"TEST", 4); ret = 1; }
     bool _8bit = (opCode[0] % 2 == 0);
-    /*if (opCode[0] == 0x04) { memcpy(opCMDOutput, &"ADD AL", 6); return 1; }
-    if (opCode[0] == 0x05) { if (!size_override) { memcpy(opCMDOutput, &"ADD EAX", 7); } else { memcpy(opCMDOutput, &"ADD AX", 6); } return 1; }*/
 
     if (ret) {
         if (_8bit) {
@@ -275,14 +275,13 @@ int IsJCC(unsigned char * opCode, char * opCMDOutput, bool size_override) {
     return 0;
 }
 
-int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_FILE_OFFSET) {
+int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_FILE_OFFSET, EXTRA extra) {
     int OpCodeOffset = 0;
     int OpCodeTotal = 0;
     PrefixOut prefixOut = WritePrefixes(opCodes + OpCodeOffset, output, &OpCodeOffset); output += prefixOut.prefixOffset;
     prefixOut.Address_Size_Override = (prefixOut.Address_Size_Override ^ !_32bit);
     prefixOut.Operand_Size_Override = (prefixOut.Operand_Size_Override ^ !_32bit);
     OpCodeTotal = OpCodeOffset;
-    //printf("OpCodeOffset: %d\n", OpCodeOffset);
 
     bool d = (opCodes[OpCodeOffset] % 4) >> 1; /// Add R/M to REG
     bool s = (opCodes[OpCodeOffset] % 2); /// 16/32bit values
@@ -393,19 +392,12 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
         }
     }
 
-    //printf("\n\nREG: %s\n", reg);
-    //printf("\nR/M: %s\n\n", rm);
-
     output -= prefixOut.prefixOffset;
 
+    if (extra.DEBUG_MODE) { printf("\nOp codes used (in bytes): %d for operation: %s\n", OpCodeOffset, output); }
+
     return OpCodeOffset;
-    printf("\nOp codes used (in bytes): %d\n", OpCodeOffset);
 
-
-    //printf("%s\n", output);
-
-    //int codeOffset = Decomp_0x0X(opCodes + OpCodeOffset, output + prefixOut.prefixOffset, prefixOut.Operand_Size_Override, prefixOut.Address_Size_Override);
-    //sprintf(dec, )
 }
 
 #endif // DISASSEMBLEMASTER_H_INCLUDED

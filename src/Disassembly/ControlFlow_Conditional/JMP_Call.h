@@ -9,13 +9,13 @@ int generateJMPCall(unsigned char * opCodes, char * output, bool size_override) 
         opsUsed+=2;
     } else {
         opsUsed++;
-        if (opCodes[0] == 0xEA || opCodes[0] == 0x9A) { // JMP FAR
+        if (opCodes[0] == 0xEA || opCodes[0] == 0x9A) { /// JMP FAR
             char * disp1 = (char*)calloc(16,sizeof(char)); int disp1_len_off = generateIMM(opCodes + opsUsed, disp1, false, size_override, true);
             char * disp2 = (char*)calloc(16,sizeof(char)); int disp2_len_off = generateIMM(opCodes + opsUsed + disp1_len_off, disp2, false, true, true);
             sprintf(output, "%s:%s", disp2, disp1);
             opsUsed += disp1_len_off + disp2_len_off;
         }
-        else { // JMP NEAR
+        else { /// JMP NEAR
             char * disp = (char*)calloc(16,sizeof(char)); int disp_len_off = generateIMM(opCodes + opsUsed, disp, false, size_override, !(opCodes[0] == 0xEB));
             sprintf(output, "%s", disp);
             opsUsed += disp_len_off;
