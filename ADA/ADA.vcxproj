@@ -155,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AnalyzingFuncs.h" />
+    <ClInclude Include="src\Disassembly\Extended\_0F.h" />
     <ClInclude Include="src\PrintFuncs.h" />
     <ClInclude Include="src\source.h" />
   </ItemGroup>

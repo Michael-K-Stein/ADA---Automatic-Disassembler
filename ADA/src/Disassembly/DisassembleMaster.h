@@ -3,18 +3,7 @@
 
 #include "Common.h"
 #include "ControlFlow_Conditional/JMP_Call.h"
-
-typedef struct PrefixOut {
-    int prefixOffset; /// The offset from which to start writing the opcode names, not the offset of how many bytes are used for prefixes.
-
-    bool Operand_Size_Override;
-    bool Address_Size_Override;
-};
-
-typedef struct EXTRA { /// Extra information which might need to be passed between functions
-    bool DEBUG_MODE; // Prints extra information during runtime.
-    bool FORCE; // Forcefully continue if you encounter an unknown/ invalid opcode. This is UNRELIABLE!
-};
+#include "Extended/_0F.h"
 
 PrefixOut WritePrefixes(unsigned char * opCodes, char * output, int *OpCodeOffset) {
     unsigned char * prefixes = (unsigned char *)calloc(sizeof(unsigned char), 4);
@@ -305,11 +294,11 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
 
     char * opCMD = (char *)calloc(32, sizeof(char));
 
-    if (IsRegular(opCodes + OpCodeOffset,opCMD)){
+	if (IsRegular(opCodes + OpCodeOffset,opCMD)){
         sprintf(output, 128, "%s %s, %s", opCMD, d ? reg : rm, d ? rm : reg);
         OpCodeOffset += rm_len_off + 1;
 	} else if (IsTwoByteOpCode(opCodes + OpCodeOffset, opCMD)) {
-		OpCodeOffset += 2;
+		OpCodeOffset += 1 + Disassemble_0F(opCodes + OpCodeOffset + 1, output, TOTAL_FILE_OFFSET, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override);
     } else if (IsMove(opCodes + OpCodeOffset, opCMD)) {
         char * movInstructions = (char *)calloc(128, sizeof(char));
         int movInstructions_len_off = generateMOV(opCodes + OpCodeOffset, movInstructions, prefixOut.Address_Size_Override, prefixOut.Operand_Size_Override, rm, rm_len_off);
@@ -448,5 +437,7 @@ int Disassemble(unsigned char * opCodes, char * output, bool _32bit, int TOTAL_F
     return OpCodeOffset;
 
 }
+
+
 
 #endif // DISASSEMBLEMASTER_H_INCLUDED

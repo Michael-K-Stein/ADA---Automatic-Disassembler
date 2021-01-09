@@ -14,12 +14,12 @@ using namespace std;
 
 
 int getASMInput(unsigned char * dest) {
-	unsigned char * inp = (unsigned char *)malloc(17 * sizeof(unsigned char));
-	int * inp2 = (int *)malloc(17 * sizeof(int));
+	unsigned char * inp = (unsigned char *)malloc(33 * sizeof(unsigned char));
+	int * inp2 = (int *)malloc(33 * sizeof(int));
 	bool finished = false;
 	int len = 0;
 	cout << endl << "Input: ";
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 32; i++) {
 		if (!finished) {
 			cin >> std::hex >> inp2[i];
 			finished = inp2[i] >= 256;
@@ -28,10 +28,10 @@ int getASMInput(unsigned char * dest) {
 		}
 		else { inp[i] = 0; }
 	}
-	inp[16] = '\0';
+	inp[32] = '\0';
 	len--;
 	cout << endl << endl;
-	memcpy(dest, inp, 16 * sizeof(char));
+	memcpy(dest, inp, 32 * sizeof(char));
 	return len;
 }
 
@@ -81,7 +81,7 @@ int main()
 	}*/
 
 	/*
-	EXTRA extra; extra.DEBUG_MODE = false;
+	
 
 	FILE * fPtr =fopen("disassTest", "rb");
 	uint64_t fsize = getFileSize("disassTest");
@@ -103,18 +103,20 @@ int main()
 			}
 			codeOffset+= opCodeOffset;
 		}
-	}
-
-	while (1) {
-		unsigned char * input = (unsigned char *)calloc(16, sizeof(unsigned char));
+	}*/
+	//EXTRA extra; extra.DEBUG_MODE = false;
+	/*while (1) {
+		unsigned char * input = (unsigned char *)calloc(32, sizeof(unsigned char));
 		int len = getASMInput(input);
 		int codeOffset = 0;
 		while (codeOffset < len) {
-			char * dec = (char *)calloc(64, sizeof(char));
+			char * dec = (char *)calloc(256, sizeof(char));
 			int opCodeOffset = Disassemble(input + codeOffset, dec, true, codeOffset, extra);
 			printf("\n\n\n%s : %d", dec, opCodeOffset); printf("\n\n\n");
 			codeOffset+= opCodeOffset;
+			free(dec);
 		}
+		free(input);
 	}*/
 	if (StartUp()) {
 		printf("\n\n\nSomething went wrong!\n\n\n");

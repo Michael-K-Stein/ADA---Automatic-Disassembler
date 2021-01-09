@@ -8,6 +8,21 @@
 /// This file has common data which is used in multiple commands.
 /// Dear lord this shit is confusing.
 
+bool isCall = false;
+char callAddr[64];
+
+typedef struct PrefixOut {
+	int prefixOffset; /// The offset from which to start writing the opcode names, not the offset of how many bytes are used for prefixes.
+
+	bool Operand_Size_Override;
+	bool Address_Size_Override;
+};
+
+typedef struct EXTRA { /// Extra information which might need to be passed between functions
+	bool DEBUG_MODE; // Prints extra information during runtime.
+	bool FORCE; // Forcefully continue if you encounter an unknown/ invalid opcode. This is UNRELIABLE!
+};
+
 typedef struct Bit {
     unsigned x:1;
 } bit;
@@ -395,6 +410,27 @@ int generateRM_FOUR_BYTE_DISPLACEMENT(unsigned char * opCodes, char * output, ch
 
     return 0;
 }
+int generateRM_fullReg(unsigned char * opCodes, char * output, bool address_override, bool size_override) {
+	char mod = getMod(opCodes);
+	char rmVal = opCodes[1] % 8;
+
+	switch (mod) {
+	case ZERO_BYTE_DISPLACEMENT: {
+		return generateRM_ZERO_BYTE_DISPLACEMENT(opCodes, output, rmVal, address_override);
+		break; }
+	case ONE_BYTE_DISPLACEMENT: {
+		return generateRM_ONE_BYTE_DISPLACEMENT(opCodes, output, rmVal, address_override);
+		break; }
+	case FOUR_BYTE_DISPLACEMENT: {
+		return generateRM_FOUR_BYTE_DISPLACEMENT(opCodes, output, rmVal, address_override);
+		break; }
+	case FIELD_IS_REGISTER: {
+		getRMName(opCodes[1] % 8, (opCodes[0] % 2) || 1, size_override, mod, output);
+		return 1;
+		break; }
+	}
+	return 0;
+}
 int generateRM(unsigned char * opCodes, char * output, bool address_override, bool size_override) { // opCodes should be given starting right after the prefixes. Including the action op code.
 
     char mod = getMod(opCodes);
@@ -416,6 +452,28 @@ int generateRM(unsigned char * opCodes, char * output, bool address_override, bo
             break;}
     }
     return 0;
+}
+int generateRM_fullSize(unsigned char * opCodes, char * output, bool address_override, bool size_override) { // opCodes should be given starting right after the prefixes. Including the action op code.
+
+	char mod = getMod(opCodes);
+	char rmVal = opCodes[1] % 8;
+
+	switch (mod) {
+	case ZERO_BYTE_DISPLACEMENT: {
+		return generateRM_ZERO_BYTE_DISPLACEMENT(opCodes, output, rmVal, address_override);
+		break; }
+	case ONE_BYTE_DISPLACEMENT: {
+		return generateRM_ONE_BYTE_DISPLACEMENT(opCodes, output, rmVal, address_override);
+		break; }
+	case FOUR_BYTE_DISPLACEMENT: {
+		return generateRM_FOUR_BYTE_DISPLACEMENT(opCodes, output, rmVal, address_override);
+		break; }
+	case FIELD_IS_REGISTER: {
+		getRMName(opCodes[1] % 8, true, size_override, mod, output);
+		return 1;
+		break; }
+	}
+	return 0;
 }
 
 int generateIMM(unsigned char * opCodes, char * output, bool address_override, bool size_override, char type) { // opCodes should be given starting after RM.
@@ -595,9 +653,11 @@ int generateMultiple80(unsigned char * opCodes, char * output, bool address_over
 }
 
 char MultipleFFNames[36] = "INC\0\0DEC\0\0CALL\0CALLFJMP\0\0JMPF\0PUSH\0";
-int generateMultipleFF(unsigned char * opCodes, char * output, bool address_override, bool size_override) { // opCodes should be given starting right after the prefixes. Including the action op code. 'output' is the direct output succeeding the prefix.
-    char regVal = (opCodes[1] >> 3) % 8;
+int generateMultipleFF(unsigned char * opCodes, char * output, bool address_override, bool size_override) { // opCodes should be given starting right after the prefixes. Including the action op code. 'output' is the direct output succeeding the prefix.	
+	char regVal = (opCodes[1] >> 3) % 8;
     char rmVal = opCodes[1] % 8;
+
+	isCall = regVal == 2 || regVal == 3;
 
     char * multipleFFName = (char *)calloc(16, sizeof(char));
     if (regVal == 3 || regVal == 5) {
@@ -609,6 +669,8 @@ int generateMultipleFF(unsigned char * opCodes, char * output, bool address_over
 
     char * rm = (char *)calloc(64, sizeof(char));
     int rm_len_off = generateRM(opCodes, rm, address_override, size_override);
+
+	sprintf(callAddr, 64, "%s", rm);
 
     sprintf(output, 128, "%s %s", multipleFFName, rm);
 	free(rm); free(multipleFFName);

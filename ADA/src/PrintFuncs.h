@@ -65,7 +65,7 @@ void PrintSectionHeaderInfo(Section_Table * pSectionHeader) {
     asciiprintf(pSectionHeader->Name, 8); printf("\n");
 
     printf("Virual Size: 0x%.8X\n", b16to10_4Bytes(pSectionHeader->Virtual_Size));
-    printf("Virual Address: %d\n", b16to10_4Bytes(pSectionHeader->Virtual_Address));
+    printf("Virual Address: 0x%.8X\n", b16to10_4Bytes(pSectionHeader->Virtual_Address));
 
     printf("Size of Raw Data: 0x%.8X\n", b16to10_4Bytes(pSectionHeader->Size_Of_Raw_Data));
 

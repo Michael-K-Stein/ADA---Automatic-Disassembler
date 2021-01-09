@@ -49,6 +49,8 @@ int StartUp() {
 
         printf("Is valid PE format: %d\n", VerifyPEFormat(&PE));
 
+		PrintSectionHeaderInfo(&PE.section_tables[0]);
+
 		while (1) {
 
 			printf("\n\n\n");
@@ -60,7 +62,7 @@ int StartUp() {
 			Analyze(funcCMD, &PE);
 		}
 
-        PrintSectionHeaderInfo(&PE.section_tables[0]);
+        
 
         hexprintf(PE.portable_executable_header.dos_header.DOS_Signature, 2);              asciiprintf(PE.portable_executable_header.dos_header.DOS_Signature, 2);              printf("\n");
         asciiprintf(PE.portable_executable_header.dos_header.Header_Data, 58);                printf("\n");

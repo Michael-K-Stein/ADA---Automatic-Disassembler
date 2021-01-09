@@ -9,7 +9,6 @@ c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(18): warning C4101:
 c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(113): warning C4018: '<': signed/unsigned mismatch
 c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(136): warning C4018: '<': signed/unsigned mismatch
 c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(91): warning C4101: 'secName': unreferenced local variable
-c:\users\stein\desktop\ada\ada\ada\src\disassembly\disassemblemaster.h(12): warning C4091: 'typedef ': ignored on left of 'PrefixOut' when no variable is declared
-c:\users\stein\desktop\ada\ada\ada\src\disassembly\disassemblemaster.h(17): warning C4091: 'typedef ': ignored on left of 'EXTRA' when no variable is declared
-c:\users\stein\desktop\ada\ada\ada\src\analysis\getdisassembly.h(32): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\stein\desktop\ada\ada\ada\src\disassembly\common.h(19): warning C4091: 'typedef ': ignored on left of 'PrefixOut' when no variable is declared
+c:\users\stein\desktop\ada\ada\ada\src\disassembly\common.h(24): warning C4091: 'typedef ': ignored on left of 'EXTRA' when no variable is declared
   ADA.vcxproj -> C:\Users\stein\Desktop\ADA\ADA\Debug\ADA.exe

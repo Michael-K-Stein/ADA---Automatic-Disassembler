@@ -29,5 +29,8 @@
     <ClInclude Include="src\source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Disassembly\Extended\_0F.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
