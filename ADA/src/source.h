@@ -49,7 +49,7 @@ int StartUp() {
 
         printf("Is valid PE format: %d\n", VerifyPEFormat(&PE));
 
-		PrintSectionHeaderInfo(&PE.section_tables[0]);
+		PrintSectionHeaderInfo(&PE.section_tables[0], &PE);
 
 		while (1) {
 
@@ -76,7 +76,6 @@ int StartUp() {
 
         hexprintf(PE.portable_executable_header.coff_header.Number_Of_Sections, 2);           printf("\n");
         printf("Number of Sections: %d\n", getNumberOfSections(&PE));
-
 
 
         //if (GetStringsAboveLength(&PE, 30) == -1) {printf("FAIL");}else{printf("%d", GetStringsAboveLength(&PE, 14));}

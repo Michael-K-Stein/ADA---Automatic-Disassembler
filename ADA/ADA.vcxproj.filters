@@ -32,5 +32,20 @@
     <ClInclude Include="src\Disassembly\Extended\_0F.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Analysis\AnalyzeIData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Analysis\CommonAnalysis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Analysis\GetDisassembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\General\List.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Parse\DOS_Format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

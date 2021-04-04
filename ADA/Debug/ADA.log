@@ -2,7 +2,20 @@
 c:\users\stein\desktop\ada\ada\ada\src\parse\loadfile.h(47): warning C4244: '+=': conversion from 'double' to 'uint32_t', possible loss of data
 c:\users\stein\desktop\ada\ada\ada\src\parse\loadfile.h(54): warning C4244: '+=': conversion from 'double' to 'uint64_t', possible loss of data
 c:\users\stein\desktop\ada\ada\ada\src\parse\loadfile.h(148): warning C4244: 'argument': conversion from 'uint64_t' to 'size_t', possible loss of data
-c:\users\stein\desktop\ada\ada\ada\src\printfuncs.h(87): warning C4477: 'printf' : format string '%X' requires an argument of type 'unsigned int', but variadic argument 1 has type 'Section_Data *'
+c:\users\stein\desktop\ada\ada\ada\src\general\list.h(11): warning C4091: 'typedef ': ignored on left of '_list_element' when no variable is declared
+c:\users\stein\desktop\ada\ada\ada\src\general\list.h(31): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\general\list.h(47): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\general\list.h(61): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(15): warning C4091: 'typedef ': ignored on left of 'idata_function_info_t' when no variable is declared
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(34): warning C4091: 'typedef ': ignored on left of 'idata_DLL_info_t' when no variable is declared
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(41): warning C4091: 'typedef ': ignored on left of 'external_function_jmp_t' when no variable is declared
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(44): warning C4091: 'typedef ': ignored on left of 'extern_functions_t' when no variable is declared
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(51): warning C4091: 'typedef ': ignored on left of 'external_functions_info_t' when no variable is declared
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(74): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(88): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(98): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\analysis\commonanalysis.h(111): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\printfuncs.h(88): warning C4477: 'printf' : format string '%X' requires an argument of type 'unsigned int', but variadic argument 1 has type 'Section_Data *'
 c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(39): warning C4018: '<': signed/unsigned mismatch
 c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(56): warning C4018: '<': signed/unsigned mismatch
 c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(18): warning C4101: 'secName': unreferenced local variable
@@ -11,4 +24,9 @@ c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(136): warning C4018
 c:\users\stein\desktop\ada\ada\ada\src\analysis\getstrings.h(91): warning C4101: 'secName': unreferenced local variable
 c:\users\stein\desktop\ada\ada\ada\src\disassembly\common.h(19): warning C4091: 'typedef ': ignored on left of 'PrefixOut' when no variable is declared
 c:\users\stein\desktop\ada\ada\ada\src\disassembly\common.h(24): warning C4091: 'typedef ': ignored on left of 'EXTRA' when no variable is declared
+c:\users\stein\desktop\ada\ada\ada\src\analysis\getdisassembly.h(84): warning C4018: '>': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\analysis\analyzeidata.h(37): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\analysis\analyzeidata.h(146): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\analysis\analyzeidata.h(148): warning C4018: '<': signed/unsigned mismatch
+c:\users\stein\desktop\ada\ada\ada\src\analysis\analyzeidata.h(203): warning C4018: '>': signed/unsigned mismatch
   ADA.vcxproj -> C:\Users\stein\Desktop\ADA\ADA\Debug\ADA.exe

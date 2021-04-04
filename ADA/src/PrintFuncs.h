@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "Analysis/CommonAnalysis.h"
 
 
 // --- GENERAL FUNCS --- //
@@ -58,14 +59,14 @@ int asciiprintf_Signed(char * c, int length) {
 }
 
 // --- DEBUG FUNCS --- //
-void PrintSectionHeaderInfo(Section_Table * pSectionHeader) {
+void PrintSectionHeaderInfo(Section_Table * pSectionHeader, Portable_Executable * PE) {
     printf("=== === === ===\n");
 
     printf("Section: \n");
-    asciiprintf(pSectionHeader->Name, 8); printf("\n");
+    asciiprintf_Signed(pSectionHeader->Name, 8); printf("\n");
 
     printf("Virual Size: 0x%.8X\n", b16to10_4Bytes(pSectionHeader->Virtual_Size));
-    printf("Virual Address: 0x%.8X\n", b16to10_4Bytes(pSectionHeader->Virtual_Address));
+    printf("Virual Address: 0x%.8X\n", Address_relative_to_absolute(b16to10_4Bytes(pSectionHeader->Virtual_Address), PE));
 
     printf("Size of Raw Data: 0x%.8X\n", b16to10_4Bytes(pSectionHeader->Size_Of_Raw_Data));
 

@@ -22,14 +22,24 @@ char * getOriginalOpCodes(unsigned char * buf, int length) {
     return origOpCodes;
 }
 
-int PrintDisassembly(Portable_Executable * PE) {
+int PrintDisassembly(Portable_Executable * PE, external_functions_info_t * external_function_info) {
+
+	extern_functions_t * extrn_funcs = external_function_info->extern_funcs;
+
+	if (extrn_funcs == NULL) {
+		extrn_funcs = (extern_functions_t*)calloc(1, sizeof(extern_functions_t));
+		extrn_funcs->functions = InitializeList(sizeof(external_function_jmp_t));
+	}
 
     int textIndex = -1;
-    for (int i = 0; i < getNumberOfSections(PE); i++) {
+    /*for (int i = 0; i < getNumberOfSections(PE); i++) {
         if (memcmp(PE->section_tables[i].Name, textName, sizeof(textName)) == 0) {
             textIndex = i;
         }
-    }
+    }*/
+
+	textIndex = getSectionIndexFromSectionName(PE, textName);
+
 
     if (textIndex != -1) {
 
@@ -55,12 +65,34 @@ int PrintDisassembly(Portable_Executable * PE) {
                     ratC++;
                 if (true) {
 
+					bool known_call = false;
+					char * dll_name = NULL;
+					char * func_name = NULL;
+
 					if (isCall) {
 						isCall = false;
 						Func f;
 						f.start = codeOffset;
 						f.length = opCodeOffset;
 						memcpy(f.entry, callAddr, 64);
+						f.entryP = (int)strtol(f.entry, NULL, 16); // Function address
+						dll_name = Get_function_dll_from_call_address(PE, external_function_info, extrn_funcs, sectionOffset + codeOffset + opCodeOffset + f.entryP);
+						func_name = Get_function_name_from_call_address(PE, external_function_info, extrn_funcs, sectionOffset + codeOffset + opCodeOffset + f.entryP);
+						if (dll_name == NULL && func_name == NULL){
+							external_function_jmp_t * ext_f = (external_function_jmp_t*)calloc(1, sizeof(external_function_jmp_t));
+							ext_f->called_address = sectionOffset + codeOffset;
+							if (f.entryP > sectionOffset) {
+								// absolute
+								ext_f->call_address = f.entryP;
+							} else {
+								// relative
+								ext_f->call_address = sectionOffset + codeOffset + opCodeOffset + f.entryP;
+							}
+							AddItemToList(extrn_funcs->functions, ext_f);
+						} else {
+							known_call = true;
+							//printf("\nFunction call: %s:%s", dll_name, func_name);
+						}
 						funcs[amtFuncs++] = f;
 					}
 
@@ -68,8 +100,14 @@ int PrintDisassembly(Portable_Executable * PE) {
 					memcpy(origOpCodes, getOriginalOpCodes(buf + codeOffset, opCodeOffset), (opCodeOffset * 5) - 1);
                     char * tableDelim = (char *)calloc(16, sizeof(char)); 
 					for (int i = 0; i < 8 - floor((opCodeOffset*3) /8.0); i++) { tableDelim[i] = '\t'; }
-					char * allOut = (char *)calloc(256, sizeof(char));
-                    sprintf(allOut, 256, "\n0x%.8X\t|\t%s\t%s%s", codeOffset + sectionOffset, origOpCodes, tableDelim, dec);
+					char * allOut;
+					if (known_call) {
+						allOut = (char *)calloc(1024, sizeof(char));
+						sprintf(allOut, 1024, "\n0x%.8X\t|\t%s\t%s%s -> %s::%s", codeOffset + sectionOffset, origOpCodes, tableDelim, dec, dll_name, func_name);
+					} else {
+						allOut = (char *)calloc(256, sizeof(char));
+						sprintf(allOut, 256, "\n0x%.8X\t|\t%s\t%s%s", codeOffset + sectionOffset, origOpCodes, tableDelim, dec);
+					}
 					printf(allOut);
 					free(allOut);
 					free(origOpCodes);
@@ -107,7 +145,7 @@ int PrintDisassembly(Portable_Executable * PE) {
 		}
 		free(funcs);
 
-    } else { return 1;}
+    } else { return -1;}
     return 0;
 }
 

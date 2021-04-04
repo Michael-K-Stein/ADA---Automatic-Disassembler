@@ -117,7 +117,7 @@ typedef struct Section_Data {
 } Section_Data;
 
 typedef struct Section_Table {
-    unsigned char Name[8];
+    char Name[8];
     unsigned char Virtual_Size[4];
     unsigned char Virtual_Address[4];
     unsigned char Size_Of_Raw_Data[4];

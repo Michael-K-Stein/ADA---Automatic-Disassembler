@@ -670,10 +670,15 @@ int generateMultipleFF(unsigned char * opCodes, char * output, bool address_over
     char * rm = (char *)calloc(64, sizeof(char));
     int rm_len_off = generateRM(opCodes, rm, address_override, size_override);
 
-	sprintf(callAddr, 64, "%s", rm);
+	if (rm[0] != '0') {
+		sprintf(callAddr, 64, "%s", rm + 1);
+	} else {
+		sprintf(callAddr, 64, "%s", rm);
+	}
 
     sprintf(output, 128, "%s %s", multipleFFName, rm);
 	free(rm); free(multipleFFName);
+	isCall = true;
     return 1 + rm_len_off;
 }
 

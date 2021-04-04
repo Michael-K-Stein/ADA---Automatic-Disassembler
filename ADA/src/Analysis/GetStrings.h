@@ -11,7 +11,7 @@
     These "valid" strings will also be suffixed by '\0' (the NULL character).
 */
 
-unsigned char * sectionNames[] = { rdataName , rsrcName , textName };
+const char * sectionNames[] = { rdataName , rsrcName , textName };
 /// ========= ADD IMPLEMENTATION OF .RSRC
 
 char * GetStringsAboveLength(Portable_Executable * PE, int minLength) {

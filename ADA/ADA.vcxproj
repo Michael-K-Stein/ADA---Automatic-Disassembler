@@ -154,8 +154,13 @@
     <ClCompile Include="ADA.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Analysis\AnalyzeIData.h" />
+    <ClInclude Include="src\Analysis\CommonAnalysis.h" />
+    <ClInclude Include="src\Analysis\GetDisassembly.h" />
     <ClInclude Include="src\AnalyzingFuncs.h" />
     <ClInclude Include="src\Disassembly\Extended\_0F.h" />
+    <ClInclude Include="src\General\List.h" />
+    <ClInclude Include="src\Parse\DOS_Format.h" />
     <ClInclude Include="src\PrintFuncs.h" />
     <ClInclude Include="src\source.h" />
   </ItemGroup>
